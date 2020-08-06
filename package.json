@@ -1,0 +1,83 @@
+{
+  "name": "@ramp-network/ramp-instant-sdk",
+  "version": "2.1.0",
+  "description": "SDK for Ramp Instant",
+  "keywords": [],
+  "main": "dist/ramp-instant-sdk.umd.js",
+  "module": "dist/ramp-instant-sdk.es5.js",
+  "typings": "dist/types/ramp-instant-sdk.d.ts",
+  "files": [
+    "dist"
+  ],
+  "author": "Ramp Network <contact@ramp.network>",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "prebuild": "rimraf dist",
+    "build": "tsc --module commonjs && rollup -c rollup.config.ts",
+    "start": "rollup -c rollup.config.ts -w",
+    "test": "jest --coverage --env=jsdom",
+    "test:watch": "jest --coverage --watch --env=jsdom",
+    "test:prod": "npm run lint && npm run test -- --no-cache",
+    "precommit": "lint-staged",
+    "prepublish": "npm run build"
+  },
+  "lint-staged": {
+    "{src,test}/**/*.ts": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "ts-jest"
+    },
+    "testEnvironment": "node",
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ]
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true
+  },
+  "devDependencies": {
+    "@types/body-scroll-lock": "^2.6.1",
+    "@types/jest": "^23.3.2",
+    "@types/node": "^10.11.0",
+    "cross-env": "^5.2.0",
+    "husky": "^1.0.1",
+    "jest": "^23.6.0",
+    "jest-config": "^23.6.0",
+    "lint-staged": "^8.0.0",
+    "lodash.camelcase": "^4.3.0",
+    "prettier": "^2.0.5",
+    "rimraf": "^2.6.2",
+    "rollup": "^1.29.1",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-sourcemaps": "^0.5.0",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "ts-jest": "^23.10.2",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "tslint-config-standard": "^8.0.1",
+    "tslint-react": "^4.0.0",
+    "typescript": "3.7.2"
+  },
+  "dependencies": {
+    "body-scroll-lock": "^2.6.4"
+  }
+}

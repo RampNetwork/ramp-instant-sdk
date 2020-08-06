@@ -1,0 +1,50 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "jsRules": {},
+  "rules": {
+    "jsx-no-lambda": false,
+    "ban-types": false,
+    "object-literal-sort-keys": false,
+    "no-shadowed-variable": false,
+    "no-consecutive-blank-lines": true,
+    "no-floating-promises": true,
+    "await-promise": true,
+    "no-return-await": true,
+    "no-console": true,
+    "no-magic-numbers": true,
+    "promise-function-async": true,
+    "no-invalid-this": [true, "check-function-in-method"],
+    "one-variable-per-declaration": true,
+    "no-boolean-literal-compare": true,
+    "no-irregular-whitespace": true,
+    "trailing-comma": true,
+    "typedef": [
+      true,
+      "call-signature",
+      "property-declaration",
+      "member-variable-declaration"
+    ],
+    "no-unnecessary-callback-wrapper": true,
+    "no-unnecessary-qualifier": true,
+    "object-literal-key-quotes": [true, "as-needed"],
+    "prefer-method-signature": true,
+    "prefer-while": true,
+    "return-undefined": true,
+    "align": [true, "members"],
+    "object-literal-shorthand": true,
+    "member-access": true,
+    "max-line-length": [
+      true,
+      {
+        "limit": 100,
+        "ignore-pattern": "https?://"
+      }
+    ],
+    "variable-name": [true, "ban-keywords", "allow-leading-underscore"]
+  },
+  "rulesDirectory": [],
+  "linterOptions": {
+    "exclude": ["**/*.json"]
+  }
+}
