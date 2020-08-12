@@ -58,8 +58,7 @@ export interface IAssetInfo {
 }
 
 export interface IPurchase {
-  id: TPurchaseID;
-  externalId: TPurchaseExternalId;
+  id: TPurchaseExternalId;
   endTime: TDateString | null;
   /** @deprecated use `asset.address` */
   tokenAddress: TAddress | null;

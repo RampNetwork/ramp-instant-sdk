@@ -286,7 +286,7 @@ export class RampInstantSDK {
       (event: IPurchaseCreatedEvent) => {
         this._purchasePollingCredentials = {
           apiUrl: event.payload.apiUrl,
-          purchaseExternalId: event.payload.purchase.externalId,
+          purchaseExternalId: event.payload.purchase.id,
           token: event.payload.purchaseViewToken,
         };
 
