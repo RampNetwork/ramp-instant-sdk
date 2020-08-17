@@ -111,6 +111,7 @@ export interface IWidgetEvent {
 export enum WidgetEventTypes {
   WIDGET_CLOSE = 'WIDGET_CLOSE',
   WIDGET_CONFIG_DONE = 'WIDGET_CONFIG_DONE',
+  WIDGET_CONFIG_FAILED = 'WIDGET_CONFIG_FAILED',
   PURCHASE_CREATED = 'PURCHASE_CREATED',
   PURCHASE_SUCCESSFUL = 'PURCHASE_SUCCESSFUL',
   PURCHASE_FAILED = 'PURCHASE_FAILED',
@@ -165,6 +166,13 @@ export interface IWidgetConfigDoneEvent extends IWidgetEvent {
   internal?: false;
 }
 
+export interface IWidgetConfigFailedEvent extends IWidgetEvent {
+  type: WidgetEventTypes.WIDGET_CONFIG_FAILED;
+  payload: null;
+  widgetInstanceId: string;
+  internal?: false;
+}
+
 export interface IWidgetCloseRequestEvent extends IWidgetEvent {
   type: InternalEventTypes.WIDGET_CLOSE_REQUEST;
   payload: null;
@@ -187,6 +195,7 @@ export interface IWidgetCloseRequestConfirmedEvent extends IWidgetEvent {
 export type TWidgetEvents =
   | IWidgetCloseEvent
   | IWidgetConfigDoneEvent
+  | IWidgetConfigFailedEvent
   | IPurchaseCreatedEvent
   | IPurchaseFailedEvent
   | IPurchaseSuccessfulEvent;

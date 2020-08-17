@@ -33,7 +33,9 @@ new RampInstantSDK({
   swapAmount: '150000000000000000000', // 150 ETH in wei
   swapAsset: 'ETH',
   userAddress: '0xab5801a7d398351b8be11c439e05c5b3259aec9b',
-}).on('*', event => console.log(event)).show();
+})
+  .on('*', (event) => console.log(event))
+  .show();
 
 // That's it!
 ```
@@ -121,6 +123,15 @@ Each event has the following fields:
 // NOTE: it's done automatically, you can call `.show()` immediately without waiting for this event
 {
   type: 'WIDGET_CONFIG_DONE',
+  payload: null,
+  widgetInstanceId: string,
+}
+
+// Sent when the widget failed fetching internal configuration.
+// This is when the loader hides.
+// NOTE: it's done automatically, you can call `.show()` immediately without waiting for this event
+{
+  type: 'WIDGET_CONFIG_FAILED',
   payload: null,
   widgetInstanceId: string,
 }

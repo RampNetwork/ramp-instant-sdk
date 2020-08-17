@@ -219,23 +219,22 @@ export class RampInstantSDK {
       true
     );
 
-    this._on(
-      WidgetEventTypes.WIDGET_CONFIG_DONE,
-      (_event) => {
-        if (this._isConfiguredAsHosted()) {
-          return;
-        }
+    const onConfigEvent = () => {
+      if (this._isConfiguredAsHosted()) {
+        return;
+      }
 
-        this.domNodes?.iframe.classList.add('visible');
+      this.domNodes?.iframe.classList.add('visible');
 
-        const loader = this.domNodes?.overlay.querySelector('.loader-container');
+      const loader = this.domNodes?.overlay.querySelector('.loader-container');
 
-        if (loader) {
-          loader.remove();
-        }
-      },
-      true
-    );
+      if (loader) {
+        loader.remove();
+      }
+    };
+
+    this._on(WidgetEventTypes.WIDGET_CONFIG_DONE, onConfigEvent, true);
+    this._on(WidgetEventTypes.WIDGET_CONFIG_FAILED, onConfigEvent, true);
 
     this._on(
       InternalEventTypes.WIDGET_CLOSE_REQUEST,
