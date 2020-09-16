@@ -50,8 +50,10 @@ You can also see an example app using the SDK [here](https://github.com/RampNetw
 
 `RampInstantSDK` constructor accepts a configuration object with the following keys:
 
-- `swapAsset` - either `'ETH'` | `'DAI'` | `USDC` (optional),
+- `swapAsset` - either a single asset `'ETH'` | `'DAI'` | `USDC` or a comma separated list of assets that should be displayed (optional),
 - `swapAmount` - amount that the user will buy, in wei or token units, as a string (optional),
+- `fiatValue` - gross fiat value of the purchase that will be suggested to the user (optional, has to be used with `fiatCurrency`)
+- `fiatCurrency` - fiat currency of the purchase that will be suggested to the user (optional, has to be used with `fiatValue`)
 - `hostLogoUrl` - a URL to your app's logo,
 - `hostAppName` - your app's name,
 - `userAddress` - your user's ETH address,
@@ -223,14 +225,27 @@ Params:
 
 ```javascript
 {
-  // 'ETH' or 'DAI'
-  swapAsset: string;
+  // *optional*
+  // 'ETH', 'DAI' or 'USDC' or a comma-separated list of those
+  swapAsset?: string;
 
+  // *optional*
   // int string - wei or token units
-  swapAmount: string;
+  swapAmount?: string;
 
+  // *optional*
+  // int string
+  // has to be used together with `fiatCurrency`
+  fiatValue?: string;
+
+  // *optional*
+  // "EUR" or "GBP"
+  // has to be used together with `fiatValue`
+  fiatCurrency?: string;
+
+  // *optional*
   // 0x-prefixed ETH address of the buyer
-  userAddress: string;
+  userAddress?: string;
 
   // URL to your app's logo
   hostLogoUrl: string;
@@ -256,6 +271,7 @@ Params:
   // after their purchase is completed
   finalUrl?: string;
 
+  // *optional*
   // your URL for webhook updates
   webhookStatusUrl?: string;
 }

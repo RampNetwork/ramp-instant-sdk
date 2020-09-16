@@ -5,7 +5,6 @@ type THostLogoUrl = string;
 type THostApiKey = string;
 type THostAppName = string;
 type TURL = string;
-type TPurchaseID = number;
 type TDateString = string;
 type TFiatCurrency = string;
 type TFiatValue = string;
@@ -27,9 +26,10 @@ export type TPurchaseExternalId = string;
 export interface IHostConfig {
   swapAsset?: TAsset;
   swapAmount?: TSwapAmount;
+  fiatValue?: TFiatValue;
+  fiatCurrency?: TFiatCurrency;
   userAddress?: TEthAddress;
   userEmailAddress?: TEmailAddress;
-  // Shhh, top secret & undocumented stuff
   hostApiKey?: THostApiKey;
   hostLogoUrl: THostLogoUrl;
   hostAppName: THostAppName;
