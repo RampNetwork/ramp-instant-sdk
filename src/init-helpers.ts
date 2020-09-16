@@ -3,7 +3,7 @@ import {
   IHostConfigWithWidgetInstanceId,
   InternalEventTypes,
   TAllEvents,
-  WidgetVariantTypes
+  WidgetVariantTypes,
 } from './types';
 
 export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): string {
@@ -53,7 +53,7 @@ export function initDOMNode(
     iframe,
     overlay,
     shadow,
-    shadowHost
+    shadowHost,
   };
 }
 
@@ -99,17 +99,23 @@ function prepareOverlayNode(
   const loader = document.createElement('div');
   loader.classList.add('loader-container');
 
-  // tslint:disable-next-line:max-line-length
-  loader.innerHTML = `<svg width="92" height="60" viewBox="0 0 46 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="loader"><path d="M15.0061 17.654L21.5635 24.2138L16.3269 29.4524C15.597 30.1825 14.4037 30.1825 13.6738 29.4524L0.547415 16.3212C-0.182472 15.5911 -0.182472 14.3973 0.547415 13.6672L13.6738 0.547614C14.4037 -0.182538 15.597 -0.182538 16.3269 0.547614L21.5635 5.78617L15.0061 12.346C13.5463 13.8063 13.5463 16.1937 15.0061 17.654Z" fill="#56BE89"></path><path d="M45.4243 16.3212L32.2979 29.4524C31.568 30.1825 30.3747 30.1825 29.6448 29.4524L24.4082 24.2138L30.9656 17.654C32.4254 16.1937 32.4254 13.8178 30.9656 12.346L24.4082 5.78617L29.6448 0.547614C30.3747 -0.182538 31.568 -0.182538 32.2979 0.547614L45.4243 13.6788C46.1542 14.4089 46.1542 15.5911 45.4243 16.3212Z" fill="#31335D"></path><path d="M29.4532 16.321L22.8958 22.8808L16.3384 16.321C15.6085 15.5909 15.6085 14.3971 16.3384 13.667L22.8958 7.10718L29.4532 13.667C30.1831 14.4087 30.1831 15.5909 29.4532 16.321Z" fill="#56BE89"></path></svg>`;
+  // tslint:disable:max-line-length
+  loader.innerHTML = `
+    <svg width="92" height="60" viewBox="0 0 51 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="loader">
+      <path d="M16.2232 18.8309L22.282 24.912C22.7953 25.4272 22.7948 26.2647 22.281 26.7792L17.651 31.4158C16.8619 32.1947 15.5719 32.1947 14.7828 31.4158L0.591812 17.4093C-0.197271 16.6305 -0.197271 15.3571 0.591812 14.5783L14.7828 0.584122C15.5719 -0.194707 16.8619 -0.194707 17.651 0.584122L22.281 5.22078C22.7948 5.73535 22.7953 6.57281 22.282 7.08795L16.2232 13.1691C14.645 14.7267 14.645 17.2733 16.2232 18.8309Z" fill="#21BF73"></path>
+      <path d="M34.4433 18.8309L28.3845 24.912C27.8712 25.4272 27.8717 26.2647 28.3855 26.7792L33.0155 31.4158C33.8046 32.1947 35.0946 32.1947 35.8837 31.4158L50.0747 17.4093C50.8638 16.6305 50.8638 15.3571 50.0747 14.5783L35.8837 0.584122C35.0946 -0.194707 33.8046 -0.194707 33.0155 0.584122L28.3855 5.22078C27.8717 5.73535 27.8712 6.57281 28.3845 7.08795L34.4433 13.1691C36.0215 14.7267 36.0215 17.2733 34.4433 18.8309Z" fill="#0A6E5C"></path>
+      <path d="M17.8128 17.157C17.1737 16.518 17.1737 15.482 17.8128 14.843L24.1765 8.47926C24.8155 7.84025 25.8515 7.84025 26.4905 8.47926L32.8542 14.843C33.4932 15.482 33.4932 16.518 32.8542 17.157L26.4905 23.5207C25.8515 24.1598 24.8155 24.1598 24.1765 23.5207L17.8128 17.157Z" fill="#21BF73"></path>
+    </svg>`;
+  // tslint:enable:max-line-length
 
   overlay.appendChild(loader);
 
-  overlay.addEventListener('click', event => {
+  overlay.addEventListener('click', (event) => {
     if (event.target !== iframe && !overlay.querySelectorAll('.close-modal').length) {
       dispatch({
         type: InternalEventTypes.WIDGET_CLOSE_REQUEST,
         payload: null,
-        internal: true
+        internal: true,
       });
     }
   });
@@ -141,13 +147,13 @@ export function prepareCloseModalNode(dispatch: (event: TAllEvents) => void): HT
   cancelButton.classList.add('close-modal__button');
   cancelButton.classList.add('close-modal__button--cancel');
   cancelButton.textContent = 'Cancel';
-  cancelButton.addEventListener('click', event => {
+  cancelButton.addEventListener('click', (event) => {
     event.stopPropagation();
 
     dispatch({
       type: InternalEventTypes.WIDGET_CLOSE_REQUEST_CANCELLED,
       payload: null,
-      internal: true
+      internal: true,
     });
   });
 
@@ -156,13 +162,13 @@ export function prepareCloseModalNode(dispatch: (event: TAllEvents) => void): HT
   exitButton.classList.add('close-modal__button');
   exitButton.classList.add('close-modal__button--exit');
   exitButton.textContent = 'Exit';
-  exitButton.addEventListener('click', event => {
+  exitButton.addEventListener('click', (event) => {
     event.stopPropagation();
 
     dispatch({
       type: InternalEventTypes.WIDGET_CLOSE_REQUEST_CONFIRMED,
       payload: null,
-      internal: true
+      internal: true,
     });
   });
 
