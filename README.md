@@ -1,6 +1,6 @@
 # Ramp Instant SDK
 
-`@ramp-network/ramp-instant-sdk` is a library that allows you to easily integrate the Ramp Instant widget into your web app and communicate with it.
+`@ramp-network/ramp-instant-sdk` is a library that allows you to easily integrate the Ramp widget into your web app and communicate with it.
 
 It's not necessary to use it, although it's strongly recommended.
 
@@ -25,7 +25,8 @@ npm install @ramp-network/ramp-instant-sdk
 ## Example usage
 
 ```javascript
-import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
+import { Ramp
+SDK } from '@ramp-network/ramp-instant-sdk';
 
 new RampInstantSDK({
   hostAppName: 'yourDApp',
@@ -75,7 +76,7 @@ P.S. `.show()` is chainable.
 
 ## Events
 
-Ramp Instant widget sends some events that you can react to in your web app.
+Ramp widget sends some events that you can react to in your web app.
 
 Each event has the following fields:
 
