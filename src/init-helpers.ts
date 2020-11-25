@@ -10,7 +10,7 @@ export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): st
   const baseUrl = new URL(config.url || baseWidgetUrl);
   const hostUrl = window.location.origin;
 
-  const { url, ...configWithoutIframeUrl } = config;
+  const { containerNode, url, ...configWithoutIframeUrl } = config;
 
   const preparedConfig = { ...configWithoutIframeUrl, hostUrl };
 

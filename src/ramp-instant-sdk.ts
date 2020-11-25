@@ -57,6 +57,7 @@ export class RampInstantSDK {
   };
 
   private _config: IHostConfigWithWidgetInstanceId;
+  private _rawNormalizedConfig: IHostConfig;
   private _listeners: TEventListenerDict = initEventListenersDict();
   private _isVisible: boolean = false;
   private _isPollingForSwapStatus: boolean = false;
@@ -77,15 +78,15 @@ export class RampInstantSDK {
     this._runPostSubscribeHooks = this._runPostSubscribeHooks.bind(this);
     this._subscribeToWidgetEvents = this._subscribeToWidgetEvents.bind(this);
 
-    const temporaryConfig = normalizeConfigAndLogErrorsOnInvalidFields({
+    this._rawNormalizedConfig = normalizeConfigAndLogErrorsOnInvalidFields({
       variant: 'desktop',
       ...config,
     });
 
-    const widgetVariant = determineWidgetVariant(temporaryConfig);
+    const widgetVariant = determineWidgetVariant(this._rawNormalizedConfig);
 
     this._config = {
-      ...temporaryConfig,
+      ...this._rawNormalizedConfig,
       variant: widgetVariant,
       widgetInstanceId: getRandomIntString(),
     };
@@ -387,5 +388,11 @@ export class RampInstantSDK {
 
   private _isConfiguredAsHosted(): boolean {
     return ['hosted-desktop', 'hosted-mobile'].includes(this._config.variant);
+  }
+
+  private _isConfiguredAsEmbedded(): boolean {
+    return ['embedded-desktop', 'embedded-mobile'].includes(
+      this._rawNormalizedConfig.variant || ''
+    );
   }
 }

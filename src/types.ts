@@ -21,6 +21,7 @@ type TActionTimestamp = string;
 type TActionDetails = string;
 type TWebhookStatusUrl = string;
 type TFinalUrl = string;
+type TContainerNode = HTMLElement;
 export type TPurchaseExternalId = string;
 
 export interface IHostConfig {
@@ -34,9 +35,10 @@ export interface IHostConfig {
   hostLogoUrl: THostLogoUrl;
   hostAppName: THostAppName;
   url?: TURL;
-  variant?: WidgetVariantTypes | 'hosted-auto' | 'auto';
+  variant?: AllWidgetVariants;
   webhookStatusUrl?: TWebhookStatusUrl;
   finalUrl?: TFinalUrl;
+  containerNode?: TContainerNode;
 }
 
 export interface IPurchasePollingCredentials {
@@ -208,6 +210,14 @@ export type TInternalEvents =
 export type TAllEvents = TWidgetEvents | TInternalEvents;
 
 export type WidgetVariantTypes = 'desktop' | 'mobile' | 'hosted-desktop' | 'hosted-mobile';
+
+export type SyntheticWidgetVariants =
+  | 'hosted-auto'
+  | 'auto'
+  | 'embedded-desktop'
+  | 'embedded-mobile';
+
+export type AllWidgetVariants = WidgetVariantTypes | SyntheticWidgetVariants;
 
 export type TUnsubscribeToken = string;
 
