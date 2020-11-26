@@ -274,13 +274,12 @@ function getStylesForShadowDom(variant: WidgetVariantTypes): HTMLStyleElement {
       z-index: 1000;
       width: 100%;
       height: 100%;
-      // background-color: rgba(166, 174, 185, 0.7);
       display: flex;
       flex-flow: row nowrap;
       justify-content: center;
       ${isMobile ? 'align-items: flex-start;' : 'align-items: center;'}
-      min-width: ${isMobile ? minWidgetMobileWidth : widgetDesktopWidth};
-      min-height: ${isMobile ? minWidgetMobileHeight : widgetDesktopHeight};
+      min-width: ${isMobile ? minWidgetMobileWidth : widgetDesktopWidth}px;
+      min-height: ${isMobile ? minWidgetMobileHeight : widgetDesktopHeight}px;
     }
 
     .loader-container {
