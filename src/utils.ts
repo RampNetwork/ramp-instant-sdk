@@ -20,6 +20,12 @@ export function getRandomIntString(): string {
   }
 }
 
+export const widgetDesktopWidth = 895;
+export const widgetDesktopHeight = 590;
+
+export const minWidgetMobileWidth = 375;
+export const minWidgetMobileHeight = 667;
+
 export function normalizeConfigAndLogErrorsOnInvalidFields(
   config: Partial<IHostConfig>
 ): IHostConfig {
@@ -139,12 +145,6 @@ function validateContainerNode(
   containerNode: HTMLElement | undefined,
   variant: SyntheticWidgetVariants
 ): void {
-  const widgetDesktopWidth = 895;
-  const widgetDesktopHeight = 590;
-
-  const minWidgetMobileWidth = 375;
-  const minWidgetMobileHeight = 667;
-
   if (!document.body) {
     throw new Error("Couldn't find <body> element.");
   }
