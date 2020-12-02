@@ -58,6 +58,10 @@ export function normalizeConfigAndLogErrorsOnInvalidFields(
     validateContainerNode(config.containerNode, config.variant);
   }
 
+  if (!['embedded-desktop', 'embedded-mobile'].includes(configCopy.variant!)) {
+    delete configCopy.containerNode;
+  }
+
   logErrors(errors);
 
   return configCopy as IHostConfig;
