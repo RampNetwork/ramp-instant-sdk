@@ -107,7 +107,7 @@ export function initDOMNodeWithoutOverlay(
 
   shadow.appendChild(getStylesForShadowDom(config.variant));
 
-  const iframe = prepareIframeNode(url, config.variant);
+  const iframe = prepareIframeNode(url, config.variant, config.containerNode);
 
   container.appendChild(iframe);
 
@@ -137,20 +137,40 @@ export function importFonts(): void {
   document.head.appendChild(font);
 }
 
-function prepareIframeNode(url: string, variant: WidgetVariantTypes): HTMLIFrameElement {
+function prepareIframeNode(
+  url: string,
+  variant: WidgetVariantTypes,
+  containerNode?: HTMLElement
+): HTMLIFrameElement {
   const iframe = document.createElement('iframe');
 
   iframe.setAttribute('src', url);
 
-  iframe.setAttribute(
-    'width',
-    variant === 'desktop' ? widgetDesktopWidth.toString() : window.innerWidth.toString()
-  );
+  if (containerNode) {
+    iframe.setAttribute(
+      'width',
+      variant === 'desktop'
+        ? widgetDesktopWidth.toString()
+        : containerNode.getBoundingClientRect().width.toString()
+    );
 
-  iframe.setAttribute(
-    'height',
-    variant === 'desktop' ? widgetDesktopHeight.toString() : window.innerHeight.toString()
-  );
+    iframe.setAttribute(
+      'height',
+      variant === 'desktop'
+        ? widgetDesktopHeight.toString()
+        : containerNode.getBoundingClientRect().height.toString()
+    );
+  } else {
+    iframe.setAttribute(
+      'width',
+      variant === 'desktop' ? widgetDesktopWidth.toString() : window.innerWidth.toString()
+    );
+
+    iframe.setAttribute(
+      'height',
+      variant === 'desktop' ? widgetDesktopHeight.toString() : window.innerHeight.toString()
+    );
+  }
 
   iframe.classList.add('iframe');
 
