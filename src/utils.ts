@@ -3,6 +3,7 @@ import {
   IConfigError,
   IHostConfig,
   InternalEventTypes,
+  SyntheticWidgetVariants,
   TAllEventTypes,
   TEventListenerDict,
   WidgetEventTypes,
@@ -19,6 +20,12 @@ export function getRandomIntString(): string {
   }
 }
 
+export const widgetDesktopWidth = 895;
+export const widgetDesktopHeight = 590;
+
+export const minWidgetMobileWidth = 375;
+export const minWidgetMobileHeight = 667;
+
 export function normalizeConfigAndLogErrorsOnInvalidFields(
   config: Partial<IHostConfig>
 ): IHostConfig {
@@ -26,9 +33,16 @@ export function normalizeConfigAndLogErrorsOnInvalidFields(
   const configCopy = { ...config };
 
   if (
-    !['desktop', 'mobile', 'hosted-desktop', 'hosted-mobile', 'hosted-auto', 'auto'].includes(
-      config.variant!
-    )
+    ![
+      'desktop',
+      'mobile',
+      'hosted-desktop',
+      'hosted-mobile',
+      'hosted-auto',
+      'auto',
+      'embedded-desktop',
+      'embedded-mobile',
+    ].includes(config.variant!)
   ) {
     configCopy.variant = 'desktop';
 
@@ -38,6 +52,14 @@ export function normalizeConfigAndLogErrorsOnInvalidFields(
       exampleValue: `'desktop'`,
       severity: EventSeverity.WARNING,
     });
+  }
+
+  if (config.variant === 'embedded-desktop' || config.variant === 'embedded-mobile') {
+    validateContainerNode(config.containerNode, config.variant);
+  }
+
+  if (!['embedded-desktop', 'embedded-mobile'].includes(configCopy.variant!)) {
+    delete configCopy.containerNode;
   }
 
   logErrors(errors);
@@ -102,6 +124,14 @@ export function determineWidgetVariant(config: IHostConfig): WidgetVariantTypes 
     return variant;
   }
 
+  if (variant === 'embedded-desktop') {
+    return 'desktop';
+  }
+
+  if (variant === 'embedded-mobile') {
+    return 'mobile';
+  }
+
   const isDesktop = window.matchMedia(mediaQuery).matches;
 
   if (variant === 'hosted-auto') {
@@ -113,4 +143,41 @@ export function determineWidgetVariant(config: IHostConfig): WidgetVariantTypes 
 
 export function isHtmlElement(element: Element): element is HTMLElement {
   return typeof (element as any).blur === 'function';
+}
+
+function validateContainerNode(
+  containerNode: HTMLElement | undefined,
+  variant: SyntheticWidgetVariants
+): void {
+  if (!document.body) {
+    throw new Error("Couldn't find <body> element.");
+  }
+
+  if (!(containerNode instanceof HTMLElement)) {
+    throw new Error('Container node has to be a proper HTML element.');
+  }
+
+  if (!document.body.contains(containerNode)) {
+    throw new Error('Container node must be attached to the document.');
+  }
+
+  const { width, height } = containerNode.getBoundingClientRect();
+
+  if (variant === 'embedded-desktop') {
+    if (width < widgetDesktopWidth) {
+      throw new Error(`Container node must be at least ${widgetDesktopWidth}px wide.`);
+    }
+
+    if (height < widgetDesktopHeight) {
+      throw new Error(`Container node must be at least ${widgetDesktopHeight}px tall.`);
+    }
+  } else if (variant === 'embedded-mobile') {
+    if (width < minWidgetMobileWidth) {
+      throw new Error(`Container node must be at least ${minWidgetMobileWidth}px wide.`);
+    }
+
+    if (height < minWidgetMobileHeight) {
+      throw new Error(`Container node must be at least ${minWidgetMobileHeight}px wide.`);
+    }
+  }
 }

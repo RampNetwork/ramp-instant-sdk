@@ -10,9 +10,10 @@
     "dist"
   ],
   "author": "Ramp Network <contact@ramp.network>",
+  "homepage": "https://ramp.network",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/RampNetwork/ramp-instant-sdk/"
   },
   "license": "MIT",
   "engines": {

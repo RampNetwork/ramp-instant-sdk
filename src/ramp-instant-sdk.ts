@@ -5,7 +5,8 @@ import { delay, doFetchPurchase } from './event-polling';
 import {
   areUrlsEqual,
   importFonts,
-  initDOMNode,
+  initDOMNodeWithoutOverlay,
+  initDOMNodeWithOverlay,
   initWidgetIframeUrl,
   isCloseModalAlreadyOpen,
   prepareCloseModalNode,
@@ -42,7 +43,7 @@ export {
   IWidgetEvent as RampInstantEvent,
   TWidgetEvents as RampInstantEvents,
   WidgetEventTypes as RampInstantEventTypes,
-  WidgetVariantTypes as RampInstantWidgetVariantTypes,
+  AllWidgetVariants as RampInstantWidgetVariantTypes,
   IPurchase as RampInstantPurchase,
 } from './types';
 
@@ -51,12 +52,13 @@ export class RampInstantSDK {
   public domNodes?: {
     body: HTMLBodyElement | null;
     iframe: HTMLIFrameElement;
-    overlay: HTMLDivElement;
+    overlay: HTMLDivElement | null;
     shadowHost: HTMLDivElement;
     shadow: ShadowRoot;
   };
 
   private _config: IHostConfigWithWidgetInstanceId;
+  private _rawNormalizedConfig: IHostConfig;
   private _listeners: TEventListenerDict = initEventListenersDict();
   private _isVisible: boolean = false;
   private _isPollingForSwapStatus: boolean = false;
@@ -77,15 +79,15 @@ export class RampInstantSDK {
     this._runPostSubscribeHooks = this._runPostSubscribeHooks.bind(this);
     this._subscribeToWidgetEvents = this._subscribeToWidgetEvents.bind(this);
 
-    const temporaryConfig = normalizeConfigAndLogErrorsOnInvalidFields({
+    this._rawNormalizedConfig = normalizeConfigAndLogErrorsOnInvalidFields({
       variant: 'desktop',
       ...config,
     });
 
-    const widgetVariant = determineWidgetVariant(temporaryConfig);
+    const widgetVariant = determineWidgetVariant(this._rawNormalizedConfig);
 
     this._config = {
-      ...temporaryConfig,
+      ...this._rawNormalizedConfig,
       variant: widgetVariant,
       widgetInstanceId: getRandomIntString(),
     };
@@ -100,29 +102,17 @@ export class RampInstantSDK {
       document.activeElement.blur();
     }
 
-    const widgetUrl = initWidgetIframeUrl(this._config);
-
     this._registerSdkEventHandlers();
 
     window.addEventListener('message', this._subscribeToWidgetEvents);
 
     if (this._isConfiguredAsHosted()) {
-      this.widgetWindow = window.open(widgetUrl) ?? undefined;
-
-      return this;
+      this._showUsingHostedMode();
+    } else if (this._isConfiguredAsEmbedded()) {
+      this._showUsingEmbeddedMode();
+    } else if (this._isConfiguredWithOverlay()) {
+      this._showUsingOverlayMode();
     }
-
-    this.domNodes = initDOMNode(widgetUrl, this._dispatchEvent, this._config);
-
-    if (!this.domNodes?.body) {
-      throw new Error("Couldn't find <body> element.");
-    }
-
-    this.domNodes.body.appendChild(this.domNodes.shadowHost);
-
-    this._isVisible = true;
-
-    bodyScrollLock.disableBodyScroll(this.domNodes.iframe);
 
     window.addEventListener('keydown', this._handleEscapeClick, true);
 
@@ -226,7 +216,7 @@ export class RampInstantSDK {
 
       this.domNodes?.iframe.classList.add('visible');
 
-      const loader = this.domNodes?.overlay.querySelector('.loader-container');
+      const loader = this.domNodes?.shadow.querySelector('.loader-container');
 
       if (loader) {
         loader.remove();
@@ -239,15 +229,15 @@ export class RampInstantSDK {
     this._on(
       InternalEventTypes.WIDGET_CLOSE_REQUEST,
       (_event) => {
-        if (this._isConfiguredAsHosted()) {
+        if (this._isConfiguredAsHosted() || this._isConfiguredAsEmbedded()) {
           return;
         }
 
-        if (this._config.variant === 'mobile' || isCloseModalAlreadyOpen(this.domNodes!.overlay)) {
+        if (this._config.variant === 'mobile' || isCloseModalAlreadyOpen(this.domNodes!.overlay!)) {
           return;
         }
 
-        this.domNodes!.overlay.appendChild(prepareCloseModalNode(this._dispatchEvent));
+        this.domNodes!.overlay!.appendChild(prepareCloseModalNode(this._dispatchEvent));
       },
       true
     );
@@ -267,11 +257,11 @@ export class RampInstantSDK {
     this._on(
       InternalEventTypes.WIDGET_CLOSE_REQUEST_CANCELLED,
       (_event) => {
-        if (this._isConfiguredAsHosted()) {
+        if (this._isConfiguredAsHosted() || this._isConfiguredAsEmbedded()) {
           return;
         }
 
-        const modal = this.domNodes!.overlay.querySelector('.close-modal');
+        const modal = this.domNodes!.overlay!.querySelector('.close-modal');
 
         if (modal) {
           modal.remove();
@@ -385,7 +375,51 @@ export class RampInstantSDK {
     }
   }
 
+  private _showUsingEmbeddedMode(): void {
+    const widgetUrl = initWidgetIframeUrl(this._config);
+
+    this.domNodes = initDOMNodeWithoutOverlay(widgetUrl, this._dispatchEvent, this._config);
+
+    if (!this.domNodes?.body) {
+      throw new Error("Couldn't find <body> element.");
+    }
+
+    this._config.containerNode?.appendChild(this.domNodes.shadowHost);
+
+    this._isVisible = true;
+  }
+
+  private _showUsingOverlayMode(): void {
+    const widgetUrl = initWidgetIframeUrl(this._config);
+
+    this.domNodes = initDOMNodeWithOverlay(widgetUrl, this._dispatchEvent, this._config);
+
+    if (!this.domNodes?.body) {
+      throw new Error("Couldn't find <body> element.");
+    }
+
+    this.domNodes.body.appendChild(this.domNodes.shadowHost);
+
+    this._isVisible = true;
+
+    bodyScrollLock.disableBodyScroll(this.domNodes.iframe);
+  }
+
+  private _showUsingHostedMode(): void {
+    const widgetUrl = initWidgetIframeUrl(this._config);
+
+    this.widgetWindow = window.open(widgetUrl) ?? undefined;
+  }
+
+  private _isConfiguredWithOverlay(): boolean {
+    return ['desktop', 'mobile'].includes(this._config.variant);
+  }
+
   private _isConfiguredAsHosted(): boolean {
     return ['hosted-desktop', 'hosted-mobile'].includes(this._config.variant);
+  }
+
+  private _isConfiguredAsEmbedded(): boolean {
+    return ['embedded-desktop', 'embedded-mobile'].includes(this._rawNormalizedConfig.variant!);
   }
 }
