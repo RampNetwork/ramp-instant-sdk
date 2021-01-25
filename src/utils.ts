@@ -23,7 +23,7 @@ export function getRandomIntString(): string {
 export const widgetDesktopWidth = 895;
 export const widgetDesktopHeight = 590;
 
-export const minWidgetMobileWidth = 375;
+export const minWidgetMobileWidth = 320;
 export const minWidgetMobileHeight = 667;
 
 export function normalizeConfigAndLogErrorsOnInvalidFields(
