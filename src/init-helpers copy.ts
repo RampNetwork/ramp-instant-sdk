@@ -280,10 +280,9 @@ function getStylesForShadowDom(variant: WidgetVariantTypes): HTMLStyleElement {
       position: fixed;
       z-index: 1000;
       width: 100vw;
-      height: ${isMobile ? '100%;' : '100vh;'}
-      bottom: 0;
+      height: 100vh;
+      top: 0;
       left: 0;
-      overflow: hidden;
       background-color: rgba(166, 174, 185, 0.7);
       display: flex;
       flex-flow: row nowrap;
@@ -386,14 +385,7 @@ function getStylesForShadowDom(variant: WidgetVariantTypes): HTMLStyleElement {
 
     .iframe.visible {
       visibility: visible;
-      ${
-        isMobile
-          ? `
-        width: 100vw;
-        height: 100%;
-      `
-          : ''
-      }
+      position: unset;
     }
 
     .close-modal {
