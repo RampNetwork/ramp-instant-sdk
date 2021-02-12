@@ -1,7 +1,7 @@
 import bodyScrollLock from 'body-scroll-lock';
 import { baseWidgetUrl } from './consts';
 import { delay, doFetchPurchase } from './event-polling';
-import { hideWebsiteBellowOnMobile } from './init-helpers';
+import { hideWebsiteBellow } from './init-helpers';
 
 import {
   areUrlsEqual,
@@ -389,7 +389,7 @@ export class RampInstantSDK {
 
     this._isVisible = true;
     if (determineWidgetVariant(this._config) !== 'desktop') {
-      hideWebsiteBellowOnMobile(this.domNodes.shadow);
+      hideWebsiteBellow(this.domNodes.shadow);
     }
   }
 
@@ -408,7 +408,7 @@ export class RampInstantSDK {
 
     bodyScrollLock.disableBodyScroll(this.domNodes.iframe);
     if (determineWidgetVariant(this._config) !== 'desktop') {
-      hideWebsiteBellowOnMobile(this.domNodes.shadow);
+      hideWebsiteBellow(this.domNodes.shadow);
     }
   }
 

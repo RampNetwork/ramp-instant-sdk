@@ -29,7 +29,7 @@ export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): st
   return baseUrl.toString();
 }
 
-export function hideWebsiteBellowOnMobile(parent: Element | ShadowRoot) {
+export function hideWebsiteBellow(parent: Element | ShadowRoot) {
   const backgroundWebsiteHider = document.createElement('div');
   backgroundWebsiteHider.classList.add('background-hider');
   parent.appendChild(backgroundWebsiteHider);
