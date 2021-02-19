@@ -1,1 +1,1 @@
-export const baseWidgetUrl = 'https://widget-instant.ramp.network/';
+export const baseWidgetUrl = 'https://buy.ramp.network/';
