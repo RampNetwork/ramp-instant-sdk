@@ -29,6 +29,12 @@ export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): st
   return baseUrl.toString();
 }
 
+export function hideWebsiteBellow(parent: Element | ShadowRoot) {
+  const backgroundWebsiteHider = document.createElement('div');
+  backgroundWebsiteHider.classList.add('background-hider');
+  parent.appendChild(backgroundWebsiteHider);
+}
+
 export function initDOMNodeWithOverlay(
   url: string,
   dispatch: (event: TAllEvents) => void,
@@ -274,15 +280,27 @@ function getStylesForShadowDom(variant: WidgetVariantTypes): HTMLStyleElement {
   const styles = document.createElement('style');
 
   const isMobile = variant === 'mobile';
-
   styles.textContent = `
+
+    .background-hider {
+      content: '';
+      height: 30vh;
+      width: 100vw;
+      position: fixed;
+      bottom: 0;
+      transform: translateY(50%);
+      background-color: #f5f8fb;
+      z-index: 999;
+    }
+
     .overlay {
       position: fixed;
       z-index: 1000;
       width: 100vw;
-      height: 100vh;
+      height: ${isMobile ? '100%;' : '100vh;'}
       top: 0;
       left: 0;
+      overflow: hidden;
       background-color: rgba(166, 174, 185, 0.7);
       display: flex;
       flex-flow: row nowrap;
@@ -385,7 +403,14 @@ function getStylesForShadowDom(variant: WidgetVariantTypes): HTMLStyleElement {
 
     .iframe.visible {
       visibility: visible;
-      position: unset;
+      ${
+        isMobile
+          ? `
+        width: 100vw;
+        height: 100%;
+      `
+          : ''
+      }
     }
 
     .close-modal {
