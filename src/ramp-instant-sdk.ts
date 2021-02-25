@@ -1,7 +1,7 @@
 import bodyScrollLock from 'body-scroll-lock';
 import { baseWidgetUrl } from './consts';
 import { delay, doFetchPurchase } from './event-polling';
-import { hideWebsiteBellow } from './init-helpers';
+import { hideWebsiteBelow } from './init-helpers';
 
 import {
   areUrlsEqual,
@@ -388,8 +388,11 @@ export class RampInstantSDK {
     this._config.containerNode?.appendChild(this.domNodes.shadowHost);
 
     this._isVisible = true;
-    if (determineWidgetVariant(this._config) !== 'desktop') {
-      hideWebsiteBellow(this.domNodes.shadow);
+
+    const widgetMode = determineWidgetVariant(this._config);
+
+    if (widgetMode !== 'desktop' && widgetMode !== 'embedded-desktop') {
+      hideWebsiteBelow(this.domNodes.shadow);
     }
   }
 
@@ -407,8 +410,11 @@ export class RampInstantSDK {
     this._isVisible = true;
 
     bodyScrollLock.disableBodyScroll(this.domNodes.iframe);
-    if (determineWidgetVariant(this._config) !== 'desktop') {
-      hideWebsiteBellow(this.domNodes.shadow);
+
+    const widgetMode = determineWidgetVariant(this._config);
+
+    if (widgetMode !== 'desktop' && widgetMode !== 'embedded-desktop') {
+      hideWebsiteBelow(this.domNodes.shadow);
     }
   }
 

@@ -39,6 +39,8 @@ export interface IHostConfig {
   webhookStatusUrl?: TWebhookStatusUrl;
   finalUrl?: TFinalUrl;
   containerNode?: TContainerNode;
+  selectedCountryCode?: string;
+  defaultAsset?: TAsset;
 }
 
 export interface IPurchasePollingCredentials {
@@ -49,7 +51,7 @@ export interface IPurchasePollingCredentials {
 
 export interface IHostConfigWithWidgetInstanceId extends IHostConfig {
   widgetInstanceId: string;
-  variant: WidgetVariantTypes;
+  variant: AllWidgetVariants;
 }
 
 export interface IAssetInfo {

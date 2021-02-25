@@ -1,4 +1,5 @@
 import {
+  AllWidgetVariants,
   EventSeverity,
   IConfigError,
   IHostConfig,
@@ -111,7 +112,7 @@ export function countListenersForEvent(
   return listeners[event].filter((handler) => handler.internal === internal).length;
 }
 
-export function determineWidgetVariant(config: IHostConfig): WidgetVariantTypes {
+export function determineWidgetVariant(config: IHostConfig): AllWidgetVariants {
   const mediaQuery = '(min-width: 920px) and (min-height: 630px)';
   const variant = config.variant?.toLocaleLowerCase();
 
@@ -119,17 +120,11 @@ export function determineWidgetVariant(config: IHostConfig): WidgetVariantTypes 
     variant === 'mobile' ||
     variant === 'desktop' ||
     variant === 'hosted-mobile' ||
-    variant === 'hosted-desktop'
+    variant === 'hosted-desktop' ||
+    variant === 'embedded-desktop' ||
+    variant === 'embedded-mobile'
   ) {
     return variant;
-  }
-
-  if (variant === 'embedded-desktop') {
-    return 'desktop';
-  }
-
-  if (variant === 'embedded-mobile') {
-    return 'mobile';
   }
 
   const isDesktop = window.matchMedia(mediaQuery).matches;
