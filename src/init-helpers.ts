@@ -1,5 +1,6 @@
 import { baseWidgetUrl } from './consts';
 import {
+  AllWidgetVariants,
   IHostConfigWithWidgetInstanceId,
   InternalEventTypes,
   TAllEvents,
@@ -27,6 +28,12 @@ export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): st
   });
 
   return baseUrl.toString();
+}
+
+export function hideWebsiteBelow(parent: Element | ShadowRoot) {
+  const backgroundWebsiteHider = document.createElement('div');
+  backgroundWebsiteHider.classList.add('background-hider');
+  parent.appendChild(backgroundWebsiteHider);
 }
 
 export function initDOMNodeWithOverlay(
@@ -139,7 +146,7 @@ export function importFonts(): void {
 
 function prepareIframeNode(
   url: string,
-  variant: WidgetVariantTypes,
+  variant: AllWidgetVariants,
   containerNode?: HTMLElement
 ): HTMLIFrameElement {
   const iframe = document.createElement('iframe');
@@ -149,26 +156,30 @@ function prepareIframeNode(
   if (containerNode) {
     iframe.setAttribute(
       'width',
-      variant === 'desktop'
+      variant === 'desktop' || variant === 'embedded-desktop'
         ? widgetDesktopWidth.toString()
         : containerNode.getBoundingClientRect().width.toString()
     );
 
     iframe.setAttribute(
       'height',
-      variant === 'desktop'
+      variant === 'desktop' || variant === 'embedded-desktop'
         ? widgetDesktopHeight.toString()
         : containerNode.getBoundingClientRect().height.toString()
     );
   } else {
     iframe.setAttribute(
       'width',
-      variant === 'desktop' ? widgetDesktopWidth.toString() : window.innerWidth.toString()
+      variant === 'desktop' || variant === 'embedded-desktop'
+        ? widgetDesktopWidth.toString()
+        : window.innerWidth.toString()
     );
 
     iframe.setAttribute(
       'height',
-      variant === 'desktop' ? widgetDesktopHeight.toString() : window.innerHeight.toString()
+      variant === 'desktop' || variant === 'embedded-desktop'
+        ? widgetDesktopHeight.toString()
+        : window.innerHeight.toString()
     );
   }
 
@@ -270,19 +281,31 @@ export function prepareCloseModalNode(dispatch: (event: TAllEvents) => void): HT
   return container;
 }
 
-function getStylesForShadowDom(variant: WidgetVariantTypes): HTMLStyleElement {
+function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
   const styles = document.createElement('style');
 
   const isMobile = variant === 'mobile';
-
   styles.textContent = `
+
+    .background-hider {
+      content: '';
+      height: 30vh;
+      width: 100vw;
+      position: fixed;
+      bottom: 0;
+      transform: translateY(50%);
+      background-color: #f5f8fb;
+      z-index: 999;
+    }
+
     .overlay {
       position: fixed;
       z-index: 1000;
       width: 100vw;
-      height: 100vh;
+      height: ${isMobile ? '100%;' : '100vh;'}
       top: 0;
       left: 0;
+      overflow: hidden;
       background-color: rgba(166, 174, 185, 0.7);
       display: flex;
       flex-flow: row nowrap;
@@ -385,7 +408,14 @@ function getStylesForShadowDom(variant: WidgetVariantTypes): HTMLStyleElement {
 
     .iframe.visible {
       visibility: visible;
-      position: unset;
+      ${
+        isMobile
+          ? `
+        width: 100vw;
+        height: 100%;
+      `
+          : ''
+      }
     }
 
     .close-modal {
