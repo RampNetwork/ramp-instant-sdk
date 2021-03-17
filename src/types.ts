@@ -14,7 +14,7 @@ type TCryptoAmount = string;
 type TPoolFee = number;
 type TRampFee = number;
 type TAssetExchangeRate = number;
-type TPurchaseHash = string;
+type TEscrowDetailsHash = string;
 type TActionID = string;
 type TNewActionStatus = string;
 type TActionTimestamp = string;
@@ -22,6 +22,7 @@ type TActionDetails = string;
 type TWebhookStatusUrl = string;
 type TFinalUrl = string;
 type TContainerNode = HTMLElement;
+type TBlockchainTxHash = string;
 export type TPurchaseExternalId = string;
 
 export interface IHostConfig {
@@ -77,10 +78,18 @@ export interface IPurchase {
   fiatCurrency: TFiatCurrency;
   fiatValue: TFiatValue;
   assetExchangeRate: TAssetExchangeRate;
-  poolFee: TPoolFee;
-  rampFee: TRampFee;
-  purchaseHash: TPurchaseHash;
+  baseRampFee: TPoolFee;
+  networkFee: TRampFee;
+  appliedFee: TRampFee;
+  /** @deprecated use `escrowDetailsHash` */
+  purchaseHash?: TEscrowDetailsHash;
+  escrowDetailsHash?: TEscrowDetailsHash;
+  finalTxHash?: TBlockchainTxHash;
+  /** @deprecated use `status`, `releaseTxHash`, `createdAt`, `updatedAt` */
   actions: IAction[];
+  createdAt: TActionTimestamp;
+  updatedAt: TActionTimestamp;
+  status: TNewActionStatus;
 }
 
 export interface IAction {
