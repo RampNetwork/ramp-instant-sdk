@@ -176,3 +176,20 @@ function validateContainerNode(
     }
   }
 }
+
+/**
+ * Concatenates `base` with `path`, always treating `path` as a relative path. Ignores:
+ *   - trailing slash in `base`
+ *   - leading slash in `path`
+ * @param base base URL, e.g.: 'http://example.com/api' or 'http://example.com/service/api/'
+ * @param path path to append, e.g.: 'user/getByEmail' or '/swap'
+ */
+export function concatRelativePath(base: string | URL, path: string): URL {
+  const normalizedBase = urlWithoutTrailingSlash(base instanceof URL ? base.href : base);
+  const normalizedPath = path.startsWith('/') ? path.substr(1) : path;
+  return new URL(`${normalizedBase}/${normalizedPath}`);
+}
+
+export function urlWithoutTrailingSlash(url: string): string {
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+}
