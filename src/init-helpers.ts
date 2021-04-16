@@ -30,7 +30,7 @@ export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): st
   return baseUrl.toString();
 }
 
-export function hideWebsiteBelow(parent: Element | ShadowRoot) {
+export function hideWebsiteBelow(parent: Element | ShadowRoot): void {
   const backgroundWebsiteHider = document.createElement('div');
   backgroundWebsiteHider.classList.add('background-hider');
   parent.appendChild(backgroundWebsiteHider);

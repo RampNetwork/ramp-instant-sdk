@@ -1,4 +1,5 @@
 import { IPurchase, TPurchaseExternalId } from './types';
+import { concatRelativePath } from './utils';
 
 export async function doFetchPurchase(
   apiUrl: string,
@@ -7,7 +8,7 @@ export async function doFetchPurchase(
 ): Promise<IPurchase | null> {
   try {
     const rawResponse = await fetch(
-      `${apiUrl}/host-api/purchase/${purchaseExternalId}?secret=${token}`,
+      concatRelativePath(apiUrl, `/host-api/purchase/${purchaseExternalId}?secret=${token}`).href,
       {
         headers: {
           'Content-Type': 'application/json',
