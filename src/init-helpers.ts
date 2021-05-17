@@ -30,9 +30,17 @@ export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): st
   return baseUrl.toString();
 }
 
-export function hideWebsiteBelow(parent: Element | ShadowRoot): void {
+export function hideWebsiteBelow(
+  parent: Element | ShadowRoot,
+  containerWidth?: number | undefined
+): void {
   const backgroundWebsiteHider = document.createElement('div');
   backgroundWebsiteHider.classList.add('background-hider');
+
+  if (containerWidth) {
+    backgroundWebsiteHider.style.maxWidth = `${containerWidth}px`;
+  }
+
   parent.appendChild(backgroundWebsiteHider);
 }
 
@@ -315,6 +323,7 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
 
     .embedded-container {
       z-index: 1000;
+      position: relative;
       width: 100%;
       height: 100%;
       display: flex;
