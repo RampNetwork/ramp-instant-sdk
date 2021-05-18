@@ -21,7 +21,7 @@ type TActionTimestamp = string;
 type TActionDetails = string;
 type TWebhookStatusUrl = string;
 type TFinalUrl = string;
-type TContainerNode = HTMLElement;
+type TContainerNode = Element;
 export type TPurchaseExternalId = string;
 
 export interface IHostConfig {
