@@ -172,7 +172,7 @@ function validateContainerNode(
     }
 
     if (height + 1 < minWidgetMobileHeight) {
-      throw new Error(`Container node must be at least ${minWidgetMobileHeight}px wide.`);
+      throw new Error(`Container node must be at least ${minWidgetMobileHeight}px tall.`);
     }
   }
 }
