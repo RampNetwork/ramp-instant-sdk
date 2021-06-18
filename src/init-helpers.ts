@@ -292,7 +292,10 @@ export function prepareCloseModalNode(dispatch: (event: TAllEvents) => void): HT
 function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
   const styles = document.createElement('style');
 
-  const isMobile = variant === 'mobile';
+  const isMobile =
+    variant === 'mobile' || variant === 'hosted-mobile' || variant === 'embedded-mobile';
+  const isEmbedded = variant === 'embedded-mobile' || variant === 'embedded-desktop';
+
   styles.textContent = `
 
     .background-hider {
@@ -418,7 +421,7 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
     .iframe.visible {
       visibility: visible;
       ${
-        isMobile
+        !isEmbedded && isMobile
           ? `
         width: 100vw;
         height: 100%;
