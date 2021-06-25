@@ -388,14 +388,6 @@ export class RampInstantSDK {
     this._config.containerNode?.appendChild(this.domNodes.shadowHost);
 
     this._isVisible = true;
-
-    const widgetMode = determineWidgetVariant(this._config);
-
-    const containerWidth = this._config.containerNode?.getBoundingClientRect()?.width ?? undefined;
-
-    if (widgetMode !== 'desktop' && widgetMode !== 'embedded-desktop') {
-      hideWebsiteBelow(this.domNodes.shadow, containerWidth);
-    }
   }
 
   private _showUsingOverlayMode(): void {
