@@ -245,7 +245,7 @@ export function prepareCloseModalNode(dispatch: (event: TAllEvents) => void): HT
 
   const textEl = document.createElement('div');
   textEl.classList.add('close-modal__text');
-  textEl.textContent = 'Are you sure you want to exit Ramp Instant and abandon the transaction?';
+  textEl.textContent = 'Are you sure you want to exit Ramp and abandon the transaction?';
 
   const buttonContainer = document.createElement('div');
   buttonContainer.classList.add('close-modal__button-container');
