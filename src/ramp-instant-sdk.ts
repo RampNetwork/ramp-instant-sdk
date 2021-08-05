@@ -1,6 +1,6 @@
 import bodyScrollLock from 'body-scroll-lock';
 import { baseWidgetUrl, purchasePollingDelay } from './consts';
-import { delay, doFetchPurchase } from './event-polling';
+import { doFetchPurchase } from './event-polling';
 import { hideWebsiteBelow } from './init-helpers';
 
 import {
@@ -28,6 +28,7 @@ import {
 
 import {
   countListenersForEvent,
+  delay,
   determineWidgetVariant,
   getRandomIntString,
   initEventListenersDict,

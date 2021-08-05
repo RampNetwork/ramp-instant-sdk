@@ -192,3 +192,7 @@ export function concatRelativePath(base: string | URL, path: string): URL {
 export function urlWithoutTrailingSlash(url: string): string {
   return url.endsWith('/') ? url.slice(0, -1) : url;
 }
+
+export async function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
