@@ -2,12 +2,12 @@ import { concatRelativePath } from '../src/utils';
 
 describe('Utils', () => {
   describe('concatRelativePath', () => {
-    it('No slashes', () =>
+    it('Without leading and trailing slash', () =>
       expect(concatRelativePath('https://buy.ramp.network', 'api/swap').href).toBe(
         'https://buy.ramp.network/api/swap'
       ));
 
-    it('Both slashes', () =>
+    it('With leading and trailing slash', () =>
       expect(concatRelativePath('https://buy.ramp.network/api/', '/swap').href).toBe(
         'https://buy.ramp.network/api/swap'
       ));
