@@ -1,16 +1,16 @@
 import { baseWidgetUrl } from './consts';
 import {
-  AllWidgetVariants,
-  IHostConfigWithWidgetInstanceId,
-  InternalEventTypes,
-  TAllEvents,
-} from './types';
-import {
   minWidgetMobileHeight,
   minWidgetMobileWidth,
   widgetDesktopHeight,
   widgetDesktopWidth,
 } from './consts';
+import {
+  AllWidgetVariants,
+  IHostConfigWithWidgetInstanceId,
+  InternalEventTypes,
+  TAllEvents,
+} from './types';
 
 export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): string {
   const baseUrl = new URL(config.url || baseWidgetUrl);

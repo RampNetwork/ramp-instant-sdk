@@ -13,7 +13,6 @@
     "no-return-await": true,
     "no-console": true,
     "no-magic-numbers": true,
-    "no-unused-variable": true,
     "promise-function-async": true,
     "no-invalid-this": [true, "check-function-in-method"],
     "one-variable-per-declaration": true,

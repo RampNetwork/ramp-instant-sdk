@@ -167,7 +167,7 @@ export class RampInstantSDK {
       this._listeners[type].push({ callback, internal });
     }
 
-    this._runPostSubscribeHooks(type, internal);
+    this._runPostSubscribeHooks(type);
   }
 
   private _subscribeToWidgetEvents(event: MessageEvent): void {
@@ -356,10 +356,7 @@ export class RampInstantSDK {
     this._isPollingForSwapStatus = false;
   }
 
-  private _runPostSubscribeHooks(
-    eventType: TAllEventTypes | '*',
-    isHandlerInternal: boolean
-  ): void {
+  private _runPostSubscribeHooks(eventType: TAllEventTypes | '*'): void {
     /*
      *  Handles a case where a host subscribes to these events after
      *  the `PURCHASE_CREATED` event is fired
