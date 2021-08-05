@@ -1,3 +1,4 @@
+import { randomIntMultiplier } from './consts';
 import {
   AllWidgetVariants,
   EventSeverity,
@@ -16,8 +17,7 @@ export function getRandomIntString(): string {
     return String(crypto.getRandomValues(new Uint32Array(1))[0]);
   } catch {
     // if `crypto` is not supported, fall back to Math.random
-    // tslint:disable-next-line:no-magic-numbers
-    return String(Math.floor(Math.random() * 10000000));
+    return String(Math.floor(Math.random() * randomIntMultiplier));
   }
 }
 

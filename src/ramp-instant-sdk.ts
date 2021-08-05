@@ -1,5 +1,5 @@
 import bodyScrollLock from 'body-scroll-lock';
-import { baseWidgetUrl } from './consts';
+import { baseWidgetUrl, purchasePollingDelay } from './consts';
 import { delay, doFetchPurchase } from './event-polling';
 import { hideWebsiteBelow } from './init-helpers';
 
@@ -323,8 +323,7 @@ export class RampInstantSDK {
       countListenersForEvent(this._listeners, WidgetEventTypes.PURCHASE_SUCCESSFUL) > 0 ||
       countListenersForEvent(this._listeners, WidgetEventTypes.PURCHASE_FAILED) > 0
     ) {
-      // tslint:disable-next-line:no-magic-numbers
-      await delay(1000);
+      await delay(purchasePollingDelay);
 
       const purchase = await doFetchPurchase(apiUrl, purchaseExternalId, token);
 
