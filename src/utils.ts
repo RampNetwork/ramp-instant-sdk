@@ -189,7 +189,7 @@ export function concatRelativePath(base: string | URL, path: string): URL {
   return new URL(`${normalizedBase}/${normalizedPath}`);
 }
 
-export function urlWithoutTrailingSlash(url: string): string {
+function urlWithoutTrailingSlash(url: string): string {
   return url.endsWith('/') ? url.slice(0, -1) : url;
 }
 
