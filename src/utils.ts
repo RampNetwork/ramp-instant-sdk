@@ -1,4 +1,10 @@
-import { randomIntMultiplier } from './consts';
+import {
+  minWidgetMobileHeight,
+  minWidgetMobileWidth,
+  randomIntMultiplier,
+  widgetDesktopHeight,
+  widgetDesktopWidth,
+} from './consts';
 import {
   AllWidgetVariants,
   EventSeverity,
@@ -19,12 +25,6 @@ export function getRandomIntString(): string {
     return String(Math.floor(Math.random() * randomIntMultiplier));
   }
 }
-
-export const widgetDesktopWidth = 895;
-export const widgetDesktopHeight = 590;
-
-export const minWidgetMobileWidth = 320;
-export const minWidgetMobileHeight = 667;
 
 export function normalizeConfigAndLogErrorsOnInvalidFields(
   config: Partial<IHostConfig>

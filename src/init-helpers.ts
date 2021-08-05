@@ -10,7 +10,7 @@ import {
   minWidgetMobileWidth,
   widgetDesktopHeight,
   widgetDesktopWidth,
-} from './utils';
+} from './consts';
 
 export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): string {
   const baseUrl = new URL(config.url || baseWidgetUrl);
