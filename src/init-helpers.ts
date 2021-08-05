@@ -4,7 +4,6 @@ import {
   IHostConfigWithWidgetInstanceId,
   InternalEventTypes,
   TAllEvents,
-  WidgetVariantTypes,
 } from './types';
 import {
   minWidgetMobileHeight,

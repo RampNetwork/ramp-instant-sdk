@@ -9,7 +9,6 @@ import {
   TAllEventTypes,
   TEventListenerDict,
   WidgetEventTypes,
-  WidgetVariantTypes,
 } from './types';
 
 export function getRandomIntString(): string {
