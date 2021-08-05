@@ -123,7 +123,7 @@ export class RampInstantSDK {
 
   public on<T extends TAllEvents>(
     type: T['type'] | '*',
-    callback: (event: T) => any
+    callback: (event: T) => void
   ): RampInstantSDK {
     this._on(type, callback, false);
 
@@ -132,7 +132,7 @@ export class RampInstantSDK {
 
   public unsubscribe(
     type: TAllEvents['type'] | '*',
-    callback: (event: TAllEvents) => any
+    callback: (event: TAllEvents) => void
   ): RampInstantSDK {
     if (type === '*') {
       const allTypes = Object.entries(this._listeners);
@@ -150,7 +150,7 @@ export class RampInstantSDK {
 
   public _on<T extends TAllEvents>(
     type: T['type'] | '*',
-    callback: (event: T) => any,
+    callback: (event: T) => void,
     internal: boolean
   ): void {
     if (type !== '*' && !this._listeners[type]) {

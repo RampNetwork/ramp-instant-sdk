@@ -99,7 +99,7 @@ export function initEventListenersDict(): TEventListenerDict {
 
       return listenersDict;
     },
-    {} as any
+    {} as TEventListenerDict
   ) as TEventListenerDict;
 }
 
@@ -136,7 +136,7 @@ export function determineWidgetVariant(config: IHostConfig): AllWidgetVariants {
 }
 
 export function isHtmlElement(element: Element): element is HTMLElement {
-  return typeof (element as any).blur === 'function';
+  return typeof (element as HTMLElement).blur === 'function';
 }
 
 function validateContainerNode(
