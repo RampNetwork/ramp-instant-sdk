@@ -169,6 +169,16 @@ export class RampInstantSDK {
     this._runPostSubscribeHooks(type, internal);
   }
 
+  public close(): RampInstantSDK {
+    this._dispatchEvent({
+      type: WidgetEventTypes.WIDGET_CLOSE,
+      payload: null,
+      widgetInstanceId: this._config.widgetInstanceId,
+    });
+
+    return this;
+  }
+
   private _subscribeToWidgetEvents(event: MessageEvent): void {
     if (!event.data) {
       return;
