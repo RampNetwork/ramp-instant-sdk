@@ -104,14 +104,6 @@ export function initEventListenersDict(): TEventListenerDict {
   ) as TEventListenerDict;
 }
 
-export function countListenersForEvent(
-  listeners: TEventListenerDict,
-  event: TAllEventTypes,
-  internal: boolean = false
-): number {
-  return listeners[event].filter((handler) => handler.internal === internal).length;
-}
-
 export function determineWidgetVariant(config: IHostConfig): AllWidgetVariants {
   const mediaQuery = '(min-width: 920px) and (min-height: 630px)';
   const variant = config.variant?.toLocaleLowerCase();

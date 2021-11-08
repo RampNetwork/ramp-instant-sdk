@@ -1,6 +1,5 @@
 import bodyScrollLock from 'body-scroll-lock';
 import { baseWidgetUrl } from './consts';
-import { delay, doFetchPurchase } from './event-polling';
 import { hideWebsiteBelow } from './init-helpers';
 
 import {
@@ -18,7 +17,6 @@ import {
   IHostConfigWithWidgetInstanceId,
   InternalEventTypes,
   IPurchaseCreatedEvent,
-  IPurchasePollingCredentials,
   TAllEvents,
   TAllEventTypes,
   TEventListenerDict,
@@ -27,7 +25,6 @@ import {
 } from './types';
 
 import {
-  countListenersForEvent,
   determineWidgetVariant,
   getRandomIntString,
   initEventListenersDict,
@@ -62,8 +59,6 @@ export class RampInstantSDK {
   private _rawNormalizedConfig: IHostConfig;
   private _listeners: TEventListenerDict = initEventListenersDict();
   private _isVisible: boolean = false;
-  private _isPollingForSwapStatus: boolean = false;
-  private _purchasePollingCredentials: IPurchasePollingCredentials | null = null;
 
   constructor(config: IHostConfig) {
     importFonts();
@@ -75,9 +70,7 @@ export class RampInstantSDK {
     this._dispatchEvent = this._dispatchEvent.bind(this);
     this._subscribeToWidgetEvents = this._subscribeToWidgetEvents.bind(this);
     this._on = this._on.bind(this);
-    this._processPurchasePollingLoop = this._processPurchasePollingLoop.bind(this);
     this._registerSdkEventHandlers = this._registerSdkEventHandlers.bind(this);
-    this._runPostSubscribeHooks = this._runPostSubscribeHooks.bind(this);
     this._subscribeToWidgetEvents = this._subscribeToWidgetEvents.bind(this);
 
     this._rawNormalizedConfig = normalizeConfigAndLogErrorsOnInvalidFields({
@@ -165,8 +158,6 @@ export class RampInstantSDK {
     } else {
       this._listeners[type].push({ callback, internal });
     }
-
-    this._runPostSubscribeHooks(type, internal);
   }
 
   public close(): RampInstantSDK {
@@ -281,20 +272,7 @@ export class RampInstantSDK {
       true
     );
 
-    this._on(
-      WidgetEventTypes.PURCHASE_CREATED,
-      (event: IPurchaseCreatedEvent) => {
-        this._purchasePollingCredentials = {
-          apiUrl: event.payload.apiUrl,
-          purchaseExternalId: event.payload.purchase.id,
-          token: event.payload.purchaseViewToken,
-        };
-
-        // tslint:disable-next-line:no-floating-promises
-        this._processPurchasePollingLoop(this._purchasePollingCredentials);
-      },
-      true
-    );
+    this._on(WidgetEventTypes.PURCHASE_CREATED, (event: IPurchaseCreatedEvent) => event, true);
   }
 
   private _dispatchEvent(event: TAllEvents): void {
@@ -320,70 +298,6 @@ export class RampInstantSDK {
   private _teardownEventSubscriptions(): void {
     window.removeEventListener('keydown', this._handleEscapeClick, true);
     window.removeEventListener('message', this._subscribeToWidgetEvents);
-  }
-
-  private async _processPurchasePollingLoop({
-    apiUrl,
-    purchaseExternalId,
-    token,
-  }: IPurchasePollingCredentials): Promise<void> {
-    this._isPollingForSwapStatus = true;
-
-    while (
-      countListenersForEvent(this._listeners, WidgetEventTypes.PURCHASE_SUCCESSFUL) > 0 ||
-      countListenersForEvent(this._listeners, WidgetEventTypes.PURCHASE_FAILED) > 0
-    ) {
-      // tslint:disable-next-line:no-magic-numbers
-      await delay(1000);
-
-      const purchase = await doFetchPurchase(apiUrl, purchaseExternalId, token);
-
-      if (!purchase) {
-        continue;
-      }
-
-      if (purchase.actions.find((action) => action.newStatus === 'RELEASED')) {
-        this._dispatchEvent({
-          type: WidgetEventTypes.PURCHASE_SUCCESSFUL,
-          payload: {
-            purchase,
-          },
-          widgetInstanceId: this._config.widgetInstanceId,
-        });
-        return;
-      }
-
-      if (purchase.actions.find((action) => action.newStatus === 'ERROR')) {
-        this._dispatchEvent({
-          type: WidgetEventTypes.PURCHASE_FAILED,
-          payload: null,
-          widgetInstanceId: this._config.widgetInstanceId,
-        });
-        return;
-      }
-    }
-
-    this._isPollingForSwapStatus = false;
-  }
-
-  private _runPostSubscribeHooks(
-    eventType: TAllEventTypes | '*',
-    isHandlerInternal: boolean
-  ): void {
-    /*
-     *  Handles a case where a host subscribes to these events after
-     *  the `PURCHASE_CREATED` event is fired
-     */
-    if (
-      (eventType === '*' ||
-        eventType === WidgetEventTypes.PURCHASE_SUCCESSFUL ||
-        WidgetEventTypes.PURCHASE_FAILED) &&
-      this._purchasePollingCredentials &&
-      !this._isPollingForSwapStatus
-    ) {
-      // tslint:disable-next-line:no-floating-promises
-      this._processPurchasePollingLoop(this._purchasePollingCredentials);
-    }
   }
 
   private _showUsingEmbeddedMode(): void {
