@@ -271,8 +271,6 @@ export class RampInstantSDK {
       },
       true
     );
-
-    this._on(WidgetEventTypes.PURCHASE_CREATED, (event: IPurchaseCreatedEvent) => event, true);
   }
 
   private _dispatchEvent(event: TAllEvents): void {
