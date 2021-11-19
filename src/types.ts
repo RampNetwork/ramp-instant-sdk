@@ -74,7 +74,6 @@ export interface IPurchase {
   poolFee: TPoolFee;
   rampFee: TRampFee;
   purchaseHash: TPurchaseHash;
-  actions: IAction[];
 }
 
 export interface IAction {
