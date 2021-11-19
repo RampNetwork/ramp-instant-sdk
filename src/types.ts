@@ -22,6 +22,28 @@ type TActionDetails = string;
 type TWebhookStatusUrl = string;
 type TFinalUrl = string;
 type TContainerNode = HTMLElement;
+
+export enum PaymentMethodName {
+  MANUAL_BANK_TRANSFER = 'MANUAL_BANK_TRANSFER',
+  AUTO_BANK_TRANSFER = 'AUTO_BANK_TRANSFER',
+  CARD_PAYMENT = 'CARD_PAYMENT',
+  APPLE_PAY = 'APPLE_PAY',
+}
+
+export enum PurchaseStatus {
+  INITIALIZED = 'INITIALIZED',
+  PAYMENT_STARTED = 'PAYMENT_STARTED',
+  PAYMENT_IN_PROGRESS = 'PAYMENT_IN_PROGRESS',
+  PAYMENT_FAILED = 'PAYMENT_FAILED',
+  PAYMENT_EXECUTED = 'PAYMENT_EXECUTED',
+  FIAT_RECEIVED = 'FIAT_RECEIVED',
+  FIAT_SENT = 'FIAT_SENT',
+  EXPIRED = 'EXPIRED',
+  CANCELLED = 'CANCELLED',
+  RELEASING = 'RELEASING',
+  RELEASED = 'RELEASED',
+}
+
 export type TPurchaseExternalId = string;
 
 export interface IHostConfig {
@@ -51,6 +73,7 @@ export interface IHostConfigWithWidgetInstanceId extends IHostConfig {
 export interface IAssetInfo {
   address: string | null;
   symbol: string;
+  type: string;
   name: string;
   decimals: number;
 }
@@ -64,7 +87,14 @@ export interface IPurchase {
   fiatCurrency: TFiatCurrency;
   fiatValue: TFiatValue;
   assetExchangeRate: TAssetExchangeRate;
-  finalTxHash: TFinalTxHash;
+  baseRampFee: TFiatValue;
+  networkFee: TFiatValue;
+  appliedFee: TFiatValue;
+  paymentMethodType: PaymentMethodName;
+  finalTxHash?: TFinalTxHash;
+  createdAt: TDateString;
+  updatedAt: TDateString;
+  status: PurchaseStatus;
 }
 
 export interface IAction {
