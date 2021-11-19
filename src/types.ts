@@ -14,7 +14,7 @@ type TCryptoAmount = string;
 type TPoolFee = number;
 type TRampFee = number;
 type TAssetExchangeRate = number;
-type TPurchaseHash = string;
+type TFinalTxHash = string;
 type TActionID = string;
 type TNewActionStatus = string;
 type TActionTimestamp = string;
@@ -58,22 +58,13 @@ export interface IAssetInfo {
 export interface IPurchase {
   id: TPurchaseExternalId;
   endTime: TDateString | null;
-  /** @deprecated use `asset.address` */
-  tokenAddress: TAddress | null;
   asset: IAssetInfo;
-  escrowAddress?: TAddress;
   receiverAddress: TAddress;
   cryptoAmount: TCryptoAmount;
-  /** @deprecated use `cryptoAmount` */
-  ethAmount?: TCryptoAmount;
-  /** @deprecated use `cryptoAmount` */
-  tokenAmount?: TCryptoAmount;
   fiatCurrency: TFiatCurrency;
   fiatValue: TFiatValue;
   assetExchangeRate: TAssetExchangeRate;
-  poolFee: TPoolFee;
-  rampFee: TRampFee;
-  purchaseHash: TPurchaseHash;
+  finalTxHash: TFinalTxHash;
 }
 
 export interface IAction {
