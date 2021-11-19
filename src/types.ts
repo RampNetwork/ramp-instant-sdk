@@ -14,7 +14,7 @@ type TCryptoAmount = string;
 type TPoolFee = number;
 type TRampFee = number;
 type TAssetExchangeRate = number;
-type TPurchaseHash = string;
+type TFinalTxHash = string;
 type TActionID = string;
 type TNewActionStatus = string;
 type TActionTimestamp = string;
@@ -22,6 +22,28 @@ type TActionDetails = string;
 type TWebhookStatusUrl = string;
 type TFinalUrl = string;
 type TContainerNode = HTMLElement;
+
+export enum PaymentMethodName {
+  MANUAL_BANK_TRANSFER = 'MANUAL_BANK_TRANSFER',
+  AUTO_BANK_TRANSFER = 'AUTO_BANK_TRANSFER',
+  CARD_PAYMENT = 'CARD_PAYMENT',
+  APPLE_PAY = 'APPLE_PAY',
+}
+
+export enum PurchaseStatus {
+  INITIALIZED = 'INITIALIZED',
+  PAYMENT_STARTED = 'PAYMENT_STARTED',
+  PAYMENT_IN_PROGRESS = 'PAYMENT_IN_PROGRESS',
+  PAYMENT_FAILED = 'PAYMENT_FAILED',
+  PAYMENT_EXECUTED = 'PAYMENT_EXECUTED',
+  FIAT_RECEIVED = 'FIAT_RECEIVED',
+  FIAT_SENT = 'FIAT_SENT',
+  EXPIRED = 'EXPIRED',
+  CANCELLED = 'CANCELLED',
+  RELEASING = 'RELEASING',
+  RELEASED = 'RELEASED',
+}
+
 export type TPurchaseExternalId = string;
 
 export interface IHostConfig {
@@ -51,6 +73,7 @@ export interface IHostConfigWithWidgetInstanceId extends IHostConfig {
 export interface IAssetInfo {
   address: string | null;
   symbol: string;
+  type: string;
   name: string;
   decimals: number;
 }
@@ -58,23 +81,20 @@ export interface IAssetInfo {
 export interface IPurchase {
   id: TPurchaseExternalId;
   endTime: TDateString | null;
-  /** @deprecated use `asset.address` */
-  tokenAddress: TAddress | null;
   asset: IAssetInfo;
-  escrowAddress?: TAddress;
   receiverAddress: TAddress;
   cryptoAmount: TCryptoAmount;
-  /** @deprecated use `cryptoAmount` */
-  ethAmount?: TCryptoAmount;
-  /** @deprecated use `cryptoAmount` */
-  tokenAmount?: TCryptoAmount;
   fiatCurrency: TFiatCurrency;
   fiatValue: TFiatValue;
   assetExchangeRate: TAssetExchangeRate;
-  poolFee: TPoolFee;
-  rampFee: TRampFee;
-  purchaseHash: TPurchaseHash;
-  actions: IAction[];
+  baseRampFee: TFiatValue;
+  networkFee: TFiatValue;
+  appliedFee: TFiatValue;
+  paymentMethodType: PaymentMethodName;
+  finalTxHash?: TFinalTxHash;
+  createdAt: TDateString;
+  updatedAt: TDateString;
+  status: PurchaseStatus;
 }
 
 export interface IAction {
