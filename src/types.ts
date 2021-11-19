@@ -43,12 +43,6 @@ export interface IHostConfig {
   defaultAsset?: TAsset;
 }
 
-export interface IPurchasePollingCredentials {
-  token: string;
-  apiUrl: string;
-  purchaseExternalId: TPurchaseExternalId;
-}
-
 export interface IHostConfigWithWidgetInstanceId extends IHostConfig {
   widgetInstanceId: string;
   variant: AllWidgetVariants;
