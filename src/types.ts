@@ -139,6 +139,7 @@ export enum InternalEventTypes {
   WIDGET_CLOSE_REQUEST = 'WIDGET_CLOSE_REQUEST',
   WIDGET_CLOSE_REQUEST_CANCELLED = 'WIDGET_CLOSE_REQUEST_CANCELLED',
   WIDGET_CLOSE_REQUEST_CONFIRMED = 'WIDGET_CLOSE_REQUEST_CONFIRMED',
+  REQUEST_CRYPTO_ACCOUNT = 'REQUEST_CRYPTO_ACCOUNT',
 }
 
 export type TAllEventTypes = WidgetEventTypes | InternalEventTypes;
@@ -198,6 +199,15 @@ export interface IWidgetCloseRequestEvent extends IWidgetEvent {
   internal: boolean;
 }
 
+export interface IRequestCryptoAccountEvent extends IWidgetEvent {
+  type: InternalEventTypes.REQUEST_CRYPTO_ACCOUNT;
+  payload: {
+    type: string;
+    assetSymbol: string;
+  };
+  widgetInstanceId?: string;
+}
+
 export interface IWidgetCloseRequestCancelledEvent extends IWidgetEvent {
   type: InternalEventTypes.WIDGET_CLOSE_REQUEST_CANCELLED;
   payload: null;
@@ -221,7 +231,28 @@ export type TWidgetEvents =
 export type TInternalEvents =
   | IWidgetCloseRequestEvent
   | IWidgetCloseRequestCancelledEvent
-  | IWidgetCloseRequestConfirmedEvent;
+  | IWidgetCloseRequestConfirmedEvent
+  | IRequestCryptoAccountEvent;
+
+export enum InternalSdkEventTypes {
+  REQUEST_CRYPTO_ACCOUNT_RESULT = 'REQUEST_CRYPTO_ACCOUNT_RESULT',
+}
+
+export interface IRequestCryptoAccountResultEvent extends IWidgetEvent {
+  type: InternalSdkEventTypes.REQUEST_CRYPTO_ACCOUNT_RESULT;
+  payload:
+    | {
+        address: string;
+        type?: string;
+        name?: string;
+      }
+    | {
+        error: string | undefined;
+      };
+  widgetInstanceId?: string;
+}
+
+export type TSdkEvents = IRequestCryptoAccountResultEvent;
 
 export type TAllEvents = TWidgetEvents | TInternalEvents;
 
@@ -245,3 +276,12 @@ export interface IEventListener {
   internal: boolean;
   callback(evt: TAllEvents): any;
 }
+
+export type TOnRequestCryptoAccountCallback = (
+  type: string,
+  assetSymbol: string
+) => Promise<{
+  type: string;
+  address: string;
+  name?: string;
+}>;
