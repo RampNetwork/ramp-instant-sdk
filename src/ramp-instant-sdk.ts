@@ -177,8 +177,8 @@ export class RampInstantSDK {
       let result: Awaited<ReturnType<TOnRequestCryptoAccountCallback>>;
       try {
         result = await callback(event.payload.type, event.payload.assetSymbol);
-        if (!result.address || !result.type) {
-          throw new Error('Missing address or type in the callback result');
+        if (!result.address) {
+          throw new Error('Missing address in the callback result');
         }
       } catch (e) {
         let errorMessage: string | undefined;
