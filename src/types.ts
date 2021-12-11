@@ -245,6 +245,7 @@ export interface IRequestCryptoAccountResultEvent extends IWidgetEvent {
         address: string;
         type?: string;
         name?: string;
+        assetSymbol?: string;
       }
     | {
         error: string | undefined;
@@ -281,7 +282,8 @@ export type TOnRequestCryptoAccountCallback = (
   type: string,
   assetSymbol: string
 ) => Promise<{
-  type: string;
   address: string;
+  type?: string;
   name?: string;
+  assetSymbol?: string;
 }>;
