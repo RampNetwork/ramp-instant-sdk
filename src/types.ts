@@ -241,12 +241,7 @@ export enum InternalSdkEventTypes {
 export interface IRequestCryptoAccountResultEvent extends IWidgetEvent {
   type: InternalSdkEventTypes.REQUEST_CRYPTO_ACCOUNT_RESULT;
   payload:
-    | {
-        address: string;
-        type?: string;
-        name?: string;
-        assetSymbol?: string;
-      }
+    | IOnRequestCryptoAccountResult
     | {
         error: string | undefined;
       };
@@ -278,12 +273,14 @@ export interface IEventListener {
   callback(evt: TAllEvents): any;
 }
 
-export type TOnRequestCryptoAccountCallback = (
-  type: string,
-  assetSymbol: string
-) => Promise<{
+export interface IOnRequestCryptoAccountResult {
   address: string;
   type?: string;
   name?: string;
   assetSymbol?: string;
-}>;
+}
+
+export type TOnRequestCryptoAccountCallback = (
+  type: string,
+  assetSymbol: string
+) => Promise<IOnRequestCryptoAccountResult>;

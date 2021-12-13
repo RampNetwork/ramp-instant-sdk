@@ -21,6 +21,7 @@ import {
   TAllEventTypes,
   TEventListenerDict,
   TOnRequestCryptoAccountCallback,
+  IOnRequestCryptoAccountResult,
   TSdkEvents,
   TWidgetEvents,
   WidgetEventTypes,
@@ -174,7 +175,7 @@ export class RampInstantSDK {
 
   public onRequestCryptoAccount(callback: TOnRequestCryptoAccountCallback): RampInstantSDK {
     const onRequestCryptoAccount = async (event: IRequestCryptoAccountEvent) => {
-      let result: Awaited<ReturnType<TOnRequestCryptoAccountCallback>>;
+      let result: IOnRequestCryptoAccountResult;
       try {
         result = await callback(event.payload.type, event.payload.assetSymbol);
         if (!result.address) {
@@ -202,6 +203,7 @@ export class RampInstantSDK {
           address: result.address,
           type: result.type,
           name: result.name,
+          assetSymbol: result.assetSymbol,
         },
       });
     };
