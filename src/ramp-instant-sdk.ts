@@ -1,4 +1,4 @@
-import bodyScrollLock from 'body-scroll-lock';
+import { clearAllBodyScrollLocks, disableBodyScroll } from 'body-scroll-lock';
 import { baseWidgetUrl } from './consts';
 import { hideWebsiteBelow } from './init-helpers';
 
@@ -16,7 +16,6 @@ import {
   IHostConfig,
   IHostConfigWithWidgetInstanceId,
   InternalEventTypes,
-  IPurchaseCreatedEvent,
   TAllEvents,
   TAllEventTypes,
   TEventListenerDict,
@@ -203,7 +202,7 @@ export class RampInstantSDK {
           }
         } else {
           this.domNodes?.shadowHost.remove();
-          bodyScrollLock.clearAllBodyScrollLocks();
+          clearAllBodyScrollLocks();
         }
 
         this._teardownEventSubscriptions();
@@ -325,7 +324,7 @@ export class RampInstantSDK {
 
     this._isVisible = true;
 
-    bodyScrollLock.disableBodyScroll(this.domNodes.iframe);
+    disableBodyScroll(this.domNodes.iframe);
 
     const widgetMode = determineWidgetVariant(this._config);
 
