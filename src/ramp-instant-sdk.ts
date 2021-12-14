@@ -1,6 +1,5 @@
 import { clearAllBodyScrollLocks, disableBodyScroll } from 'body-scroll-lock';
-import { baseWidgetUrl } from './consts';
-import { hideWebsiteBelow } from './init-helpers';
+import { getBaseUrl, hideWebsiteBelow } from './init-helpers';
 
 import {
   areUrlsEqual,
@@ -16,9 +15,14 @@ import {
   IHostConfig,
   IHostConfigWithWidgetInstanceId,
   InternalEventTypes,
+  InternalSdkEventTypes,
+  IRequestCryptoAccountEvent,
   TAllEvents,
   TAllEventTypes,
   TEventListenerDict,
+  TOnRequestCryptoAccountCallback,
+  IOnRequestCryptoAccountResult,
+  TSdkEvents,
   TWidgetEvents,
   WidgetEventTypes,
 } from './types';
@@ -169,12 +173,52 @@ export class RampInstantSDK {
     return this;
   }
 
+  public onRequestCryptoAccount(callback: TOnRequestCryptoAccountCallback): RampInstantSDK {
+    const onRequestCryptoAccount = async (event: IRequestCryptoAccountEvent) => {
+      let result: IOnRequestCryptoAccountResult;
+      try {
+        result = await callback(event.payload.type, event.payload.assetSymbol);
+        if (!result.address) {
+          throw new Error('Missing address in the callback result');
+        }
+      } catch (e) {
+        let errorMessage: string | undefined;
+        if (typeof e === 'string') {
+          errorMessage = e;
+        } else if (e instanceof Error) {
+          errorMessage = e.message;
+        }
+        this._sendEventToWidget({
+          type: InternalSdkEventTypes.REQUEST_CRYPTO_ACCOUNT_RESULT,
+          payload: {
+            error: errorMessage,
+          },
+        });
+        return;
+      }
+
+      this._sendEventToWidget({
+        type: InternalSdkEventTypes.REQUEST_CRYPTO_ACCOUNT_RESULT,
+        payload: {
+          address: result.address,
+          type: result.type,
+          name: result.name,
+          assetSymbol: result.assetSymbol,
+        },
+      });
+    };
+
+    this._on(InternalEventTypes.REQUEST_CRYPTO_ACCOUNT, onRequestCryptoAccount, true);
+
+    return this;
+  }
+
   private _subscribeToWidgetEvents(event: MessageEvent): void {
     if (!event.data) {
       return;
     }
 
-    if (!areUrlsEqual(event.origin, this._config.url || baseWidgetUrl)) {
+    if (!areUrlsEqual(event.origin, getBaseUrl(this._config).origin)) {
       return;
     }
 
@@ -270,6 +314,19 @@ export class RampInstantSDK {
       },
       true
     );
+  }
+
+  private _sendEventToWidget(event: TSdkEvents): void {
+    if (!this._isVisible) {
+      throw new Error(`Widget is not visible couldn't send the event`);
+    }
+    try {
+      (this.widgetWindow ?? this.domNodes?.iframe.contentWindow)?.postMessage(
+        event,
+        getBaseUrl(this._config).origin
+      );
+      // tslint:disable-next-line:no-empty
+    } catch {}
   }
 
   private _dispatchEvent(event: TAllEvents): void {

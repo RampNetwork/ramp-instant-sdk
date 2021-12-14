@@ -4,7 +4,6 @@ import {
   IHostConfigWithWidgetInstanceId,
   InternalEventTypes,
   TAllEvents,
-  WidgetVariantTypes,
 } from './types';
 import {
   minWidgetMobileHeight,
@@ -13,8 +12,12 @@ import {
   widgetDesktopWidth,
 } from './utils';
 
+export function getBaseUrl(config: IHostConfigWithWidgetInstanceId): URL {
+  return new URL(config.url || baseWidgetUrl);
+}
+
 export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): string {
-  const baseUrl = new URL(config.url || baseWidgetUrl);
+  const baseUrl = getBaseUrl(config);
   const hostUrl = window.location.origin;
 
   const { containerNode, url, ...configWithoutIframeUrl } = config;
