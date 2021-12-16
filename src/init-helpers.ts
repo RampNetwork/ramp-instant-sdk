@@ -1,6 +1,3 @@
-import { url } from 'inspector';
-import { hostname } from 'os';
-import { Url } from 'url';
 import { baseWidgetUrl } from './consts';
 import {
   AllWidgetVariants,
