@@ -1,10 +1,10 @@
 import bodyScrollLock from 'body-scroll-lock';
 import { baseWidgetUrl } from './consts';
 import { delay, doFetchPurchase } from './event-polling';
-import { hideWebsiteBelow } from './init-helpers';
 
 import {
-  areUrlsEqual,
+  areValidUrls,
+  hideWebsiteBelow,
   importFonts,
   initDOMNodeWithoutOverlay,
   initDOMNodeWithOverlay,
@@ -174,7 +174,7 @@ export class RampInstantSDK {
       return;
     }
 
-    if (!areUrlsEqual(event.origin, this._config.url || baseWidgetUrl)) {
+    if (!areValidUrls(event.origin, this._config.url || baseWidgetUrl)) {
       return;
     }
 

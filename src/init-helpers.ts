@@ -1,3 +1,6 @@
+import { url } from 'inspector';
+import { hostname } from 'os';
+import { Url } from 'url';
 import { baseWidgetUrl } from './consts';
 import {
   AllWidgetVariants,
@@ -231,8 +234,27 @@ function prepareOverlayNode(
   return overlay;
 }
 
-export function areUrlsEqual(url0: string, url1: string): boolean {
-  return new URL(url0).toString() === new URL(url1).toString();
+export function safeCastToUrl(url: unknown) {
+  try {
+    return new URL(String(url));
+  } catch {
+    return;
+  }
+}
+
+export function areValidUrls(urlStr0: string, urlStr1: string): boolean {
+  const url0 = safeCastToUrl(urlStr0);
+  const url1 = safeCastToUrl(urlStr1);
+
+  if (!url0 || !url1) {
+    return false;
+  }
+
+  const hasSameScheme = url0.origin === url1.origin;
+  const hasSameDomain = url0.hostname === url1.hostname;
+  const hasTruthyDomain = Boolean(url0.hostname) && Boolean(url1.hostname);
+
+  return hasSameScheme && hasSameDomain && hasTruthyDomain;
 }
 
 export function isCloseModalAlreadyOpen(containerNode: HTMLElement): boolean {
