@@ -247,11 +247,7 @@ export function areValidUrls(urlStr0: string, urlStr1: string): boolean {
     return false;
   }
 
-  const hasSameScheme = url0.origin === url1.origin;
-  const hasSameDomain = url0.hostname === url1.hostname;
-  const hasTruthyDomain = Boolean(url0.hostname) && Boolean(url1.hostname);
-
-  return hasSameScheme && hasSameDomain && hasTruthyDomain;
+  return url0.origin === url1.origin;
 }
 
 export function isCloseModalAlreadyOpen(containerNode: HTMLElement): boolean {
