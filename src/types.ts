@@ -11,8 +11,6 @@ type TFiatValue = string;
 type TAddress = string;
 type TEmailAddress = string;
 type TCryptoAmount = string;
-type TPoolFee = number;
-type TRampFee = number;
 type TAssetExchangeRate = number;
 type TFinalTxHash = string;
 type TActionID = string;
@@ -122,7 +120,7 @@ export interface IConfigError {
 
 export interface IWidgetEvent {
   type: string;
-  payload: any | null;
+  payload: unknown;
   internal?: boolean;
 }
 
@@ -270,7 +268,7 @@ export type TEventListenerDict = {
 
 export interface IEventListener {
   internal: boolean;
-  callback(evt: TAllEvents): any;
+  callback(evt: TAllEvents): void;
 }
 
 export interface IOnRequestCryptoAccountResult {

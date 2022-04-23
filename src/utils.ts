@@ -1,4 +1,11 @@
 import {
+  minWidgetMobileHeight,
+  minWidgetMobileWidth,
+  randomIntMultiplier,
+  widgetDesktopHeight,
+  widgetDesktopWidth,
+} from './consts';
+import {
   AllWidgetVariants,
   EventSeverity,
   IConfigError,
@@ -8,7 +15,6 @@ import {
   TAllEventTypes,
   TEventListenerDict,
   WidgetEventTypes,
-  WidgetVariantTypes,
 } from './types';
 
 export function getRandomIntString(): string {
@@ -17,15 +23,9 @@ export function getRandomIntString(): string {
   } catch {
     // if `crypto` is not supported, fall back to Math.random
     // tslint:disable-next-line:no-magic-numbers
-    return String(Math.floor(Math.random() * 10000000));
+    return String(Math.floor(Math.random() * randomIntMultiplier));
   }
 }
-
-export const widgetDesktopWidth = 895;
-export const widgetDesktopHeight = 590;
-
-export const minWidgetMobileWidth = 320;
-export const minWidgetMobileHeight = 667;
 
 export function normalizeConfigAndLogErrorsOnInvalidFields(
   config: Partial<IHostConfig>
@@ -100,7 +100,7 @@ export function initEventListenersDict(): TEventListenerDict {
 
       return listenersDict;
     },
-    {} as any
+    {} as TEventListenerDict
   ) as TEventListenerDict;
 }
 
@@ -129,7 +129,7 @@ export function determineWidgetVariant(config: IHostConfig): AllWidgetVariants {
 }
 
 export function isHtmlElement(element: Element): element is HTMLElement {
-  return typeof (element as any).blur === 'function';
+  return typeof (element as HTMLElement).blur === 'function';
 }
 
 function validateContainerNode(
@@ -182,6 +182,6 @@ export function concatRelativePath(base: string | URL, path: string): URL {
   return new URL(`${normalizedBase}/${normalizedPath}`);
 }
 
-export function urlWithoutTrailingSlash(url: string): string {
+function urlWithoutTrailingSlash(url: string): string {
   return url.endsWith('/') ? url.slice(0, -1) : url;
 }
