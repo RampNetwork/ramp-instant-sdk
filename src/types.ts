@@ -20,6 +20,7 @@ type TActionDetails = string;
 type TWebhookStatusUrl = string;
 type TFinalUrl = string;
 type TContainerNode = HTMLElement;
+type TFlow = 'ONRAMP' | 'OFFRAMP';
 
 export enum PaymentMethodName {
   MANUAL_BANK_TRANSFER = 'MANUAL_BANK_TRANSFER',
@@ -61,6 +62,9 @@ export interface IHostConfig {
   containerNode?: TContainerNode;
   selectedCountryCode?: string;
   defaultAsset?: TAsset;
+  defaultFlow?: TFlow;
+  enabledFlows?: TFlow[];
+  offrampWebhookV3Url?: TWebhookStatusUrl;
 }
 
 export interface IHostConfigWithWidgetInstanceId extends IHostConfig {
