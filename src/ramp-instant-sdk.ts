@@ -25,6 +25,10 @@ import {
   TSdkEvents,
   TWidgetEvents,
   WidgetEventTypes,
+  TOnSendCryptoCallback,
+  ISendCryptoEvent,
+  ISendCryptoResultEvent,
+  IOnSendCryptoResult,
 } from './types';
 
 import {
@@ -62,6 +66,7 @@ export class RampInstantSDK {
   private _rawNormalizedConfig: IHostConfig;
   private _listeners: TEventListenerDict = initEventListenersDict();
   private _isVisible: boolean = false;
+  private _onSendCryptoCallback: TOnSendCryptoCallback | undefined = undefined;
 
   constructor(config: IHostConfig) {
     importFonts();
@@ -75,6 +80,7 @@ export class RampInstantSDK {
     this._on = this._on.bind(this);
     this._registerSdkEventHandlers = this._registerSdkEventHandlers.bind(this);
     this._subscribeToWidgetEvents = this._subscribeToWidgetEvents.bind(this);
+    this._onSendCrypto = this._onSendCrypto.bind(this);
 
     this._rawNormalizedConfig = normalizeConfigAndLogErrorsOnInvalidFields({
       variant: 'desktop',
@@ -173,6 +179,11 @@ export class RampInstantSDK {
     return this;
   }
 
+  public onSendCrypto(callback: TOnSendCryptoCallback): RampInstantSDK {
+    this._onSendCryptoCallback = callback;
+    return this;
+  }
+
   public onRequestCryptoAccount(callback: TOnRequestCryptoAccountCallback): RampInstantSDK {
     const onRequestCryptoAccount = async (event: IRequestCryptoAccountEvent) => {
       let result: IOnRequestCryptoAccountResult;
@@ -268,6 +279,10 @@ export class RampInstantSDK {
       }
     };
 
+    if (this._config.useSendCryptoCallback) {
+      this.on(InternalEventTypes.SEND_CRYPTO, this._onSendCrypto);
+    }
+
     this._on(WidgetEventTypes.WIDGET_CONFIG_DONE, onConfigEvent, true);
     this._on(WidgetEventTypes.WIDGET_CONFIG_FAILED, onConfigEvent, true);
 
@@ -345,6 +360,41 @@ export class RampInstantSDK {
         internal: true,
       });
     }
+  }
+
+  private async _onSendCrypto(event: ISendCryptoEvent): Promise<void> {
+    let result: IOnSendCryptoResult | undefined;
+    try {
+      result = await this._onSendCryptoCallback?.(
+        event.payload.assetSymbol,
+        event.payload.amount,
+        event.payload.address
+      );
+      if (!result?.txHash) {
+        throw new Error('Missing txHash in the callback result');
+      }
+    } catch (e) {
+      let errorMessage: string | undefined;
+      if (typeof e === 'string') {
+        errorMessage = e;
+      } else if (e instanceof Error) {
+        errorMessage = e.message;
+      }
+      this._sendEventToWidget({
+        type: InternalSdkEventTypes.SEND_CRYPTO_RESULT,
+        payload: {
+          error: errorMessage,
+        },
+      });
+      return;
+    }
+
+    this._sendEventToWidget({
+      type: InternalSdkEventTypes.SEND_CRYPTO_RESULT,
+      payload: {
+        txHash: result.txHash,
+      },
+    });
   }
 
   // Event subscriptions aren't cleared so that host can receive a PAYMENT_SUCCESSFUL event

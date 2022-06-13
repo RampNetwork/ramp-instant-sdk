@@ -26,7 +26,7 @@ export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): st
 
   Object.entries(preparedConfig).forEach(([key, value]) => {
     if (value) {
-      baseUrl.searchParams.append(key, Array.isArray(value) ? value.join(',') : value);
+      baseUrl.searchParams.append(key, Array.isArray(value) ? value.join(',') : value.toString());
     }
   });
 

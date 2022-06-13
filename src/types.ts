@@ -65,6 +65,7 @@ export interface IHostConfig {
   defaultFlow?: TFlow;
   enabledFlows?: TFlow[];
   offrampWebhookV3Url?: TWebhookStatusUrl;
+  useSendCryptoCallback?: boolean;
 }
 
 export interface IHostConfigWithWidgetInstanceId extends IHostConfig {
@@ -140,6 +141,7 @@ export enum InternalEventTypes {
   WIDGET_CLOSE_REQUEST_CANCELLED = 'WIDGET_CLOSE_REQUEST_CANCELLED',
   WIDGET_CLOSE_REQUEST_CONFIRMED = 'WIDGET_CLOSE_REQUEST_CONFIRMED',
   REQUEST_CRYPTO_ACCOUNT = 'REQUEST_CRYPTO_ACCOUNT',
+  SEND_CRYPTO = 'SEND_CRYPTO',
 }
 
 export type TAllEventTypes = WidgetEventTypes | InternalEventTypes;
@@ -192,6 +194,16 @@ export interface IRequestCryptoAccountEvent extends IWidgetEvent {
   widgetInstanceId?: string;
 }
 
+export interface ISendCryptoEvent extends IWidgetEvent {
+  type: InternalEventTypes.SEND_CRYPTO;
+  payload: {
+    assetSymbol: string;
+    amount: string;
+    address: string;
+  };
+  widgetInstanceId?: string;
+}
+
 export interface IWidgetCloseRequestCancelledEvent extends IWidgetEvent {
   type: InternalEventTypes.WIDGET_CLOSE_REQUEST_CANCELLED;
   payload: null;
@@ -214,10 +226,12 @@ export type TInternalEvents =
   | IWidgetCloseRequestEvent
   | IWidgetCloseRequestCancelledEvent
   | IWidgetCloseRequestConfirmedEvent
-  | IRequestCryptoAccountEvent;
+  | IRequestCryptoAccountEvent
+  | ISendCryptoEvent;
 
 export enum InternalSdkEventTypes {
   REQUEST_CRYPTO_ACCOUNT_RESULT = 'REQUEST_CRYPTO_ACCOUNT_RESULT',
+  SEND_CRYPTO_RESULT = 'SEND_CRYPTO_RESULT',
 }
 
 export interface IRequestCryptoAccountResultEvent extends IWidgetEvent {
@@ -230,7 +244,17 @@ export interface IRequestCryptoAccountResultEvent extends IWidgetEvent {
   widgetInstanceId?: string;
 }
 
-export type TSdkEvents = IRequestCryptoAccountResultEvent;
+export interface ISendCryptoResultEvent extends IWidgetEvent {
+  type: InternalSdkEventTypes.SEND_CRYPTO_RESULT;
+  payload:
+    | IOnSendCryptoResult
+    | {
+        error: string | undefined;
+      };
+  widgetInstanceId?: string;
+}
+
+export type TSdkEvents = IRequestCryptoAccountResultEvent | ISendCryptoResultEvent;
 
 export type TAllEvents = TWidgetEvents | TInternalEvents;
 
@@ -262,7 +286,17 @@ export interface IOnRequestCryptoAccountResult {
   assetSymbol?: string;
 }
 
+export interface IOnSendCryptoResult {
+  txHash: string;
+}
+
 export type TOnRequestCryptoAccountCallback = (
   type: string,
   assetSymbol: string
 ) => Promise<IOnRequestCryptoAccountResult>;
+
+export type TOnSendCryptoCallback = (
+  assetSymbol: string,
+  amount: string,
+  address: string
+) => Promise<IOnSendCryptoResult>;
