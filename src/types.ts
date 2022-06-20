@@ -100,6 +100,26 @@ export interface IPurchase {
   status: PurchaseStatus;
 }
 
+export interface IOfframpPurchase {
+  id: string;
+  createdAt: string;
+  crypto: {
+    amount: string;
+    assetInfo: {
+      address: string | null;
+      symbol: string;
+      chain: string;
+      type: string;
+      name: string;
+      decimals: number;
+    };
+  };
+  fiat: {
+    amount: number;
+    currencySymbol: string;
+  };
+}
+
 export interface IAction {
   id: TActionID;
   newStatus: TNewActionStatus;
@@ -134,6 +154,7 @@ export enum WidgetEventTypes {
   WIDGET_CONFIG_DONE = 'WIDGET_CONFIG_DONE',
   WIDGET_CONFIG_FAILED = 'WIDGET_CONFIG_FAILED',
   PURCHASE_CREATED = 'PURCHASE_CREATED',
+  OFFRAMP_PURCHASE_CREATED = 'OFFRAMP_PURCHASE_CREATED',
 }
 
 export enum InternalEventTypes {
@@ -157,6 +178,17 @@ export interface IPurchaseCreatedEvent extends IWidgetEvent {
   type: WidgetEventTypes.PURCHASE_CREATED;
   payload: {
     purchase: IPurchase;
+    purchaseViewToken: string;
+    apiUrl: string;
+  };
+  widgetInstanceId: string;
+  internal?: false;
+}
+
+export interface IOfframpPurchaseCreatedEvent extends IWidgetEvent {
+  type: WidgetEventTypes.OFFRAMP_PURCHASE_CREATED;
+  payload: {
+    purchase: IOfframpPurchase;
     purchaseViewToken: string;
     apiUrl: string;
   };
@@ -220,7 +252,8 @@ export type TWidgetEvents =
   | IWidgetCloseEvent
   | IWidgetConfigDoneEvent
   | IWidgetConfigFailedEvent
-  | IPurchaseCreatedEvent;
+  | IPurchaseCreatedEvent
+  | IOfframpPurchaseCreatedEvent;
 
 export type TInternalEvents =
   | IWidgetCloseRequestEvent
