@@ -120,7 +120,7 @@ export interface IConfigError {
 
 export interface IWidgetEvent {
   type: string;
-  payload: any | null;
+  payload: unknown;
   internal?: boolean;
 }
 
@@ -248,7 +248,7 @@ export type TEventListenerDict = {
 
 export interface IEventListener {
   internal: boolean;
-  callback(evt: TAllEvents): any;
+  callback(evt: TAllEvents): void;
 }
 
 export interface IOnRequestCryptoAccountResult {

@@ -3,6 +3,7 @@
   "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
   "jsRules": {},
   "rules": {
+    "no-any": true,
     "jsx-no-lambda": false,
     "ban-types": false,
     "object-literal-sort-keys": false,
@@ -19,12 +20,7 @@
     "no-boolean-literal-compare": true,
     "no-irregular-whitespace": true,
     "trailing-comma": true,
-    "typedef": [
-      true,
-      "call-signature",
-      "property-declaration",
-      "member-variable-declaration"
-    ],
+    "typedef": [true, "call-signature", "property-declaration", "member-variable-declaration"],
     "no-unnecessary-callback-wrapper": true,
     "no-unnecessary-qualifier": true,
     "object-literal-key-quotes": [true, "as-needed"],

@@ -1,16 +1,16 @@
-import { baseWidgetUrl } from './consts';
+import {
+  baseWidgetUrl,
+  minWidgetMobileHeight,
+  minWidgetMobileWidth,
+  widgetDesktopHeight,
+  widgetDesktopWidth,
+} from './consts';
 import {
   AllWidgetVariants,
   IHostConfigWithWidgetInstanceId,
   InternalEventTypes,
   TAllEvents,
 } from './types';
-import {
-  minWidgetMobileHeight,
-  minWidgetMobileWidth,
-  widgetDesktopHeight,
-  widgetDesktopWidth,
-} from './utils';
 
 export function getBaseUrl(config: IHostConfigWithWidgetInstanceId): URL {
   return new URL(config.url || baseWidgetUrl);
