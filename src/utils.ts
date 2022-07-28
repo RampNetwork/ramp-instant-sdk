@@ -62,6 +62,10 @@ export function normalizeConfigAndLogErrorsOnInvalidFields(
     delete configCopy.containerNode;
   }
 
+  if (typeof config.useSendCryptoCallback !== 'undefined') {
+    delete config.useSendCryptoCallback;
+  }
+
   logErrors(errors);
 
   return configCopy as IHostConfig;
