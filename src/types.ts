@@ -1,3 +1,5 @@
+import { SEND_CRYPTO_SUPPORTED_VERSION } from './consts';
+
 type TAsset = string;
 type TEthAddress = string;
 type TSwapAmount = string;
@@ -68,9 +70,10 @@ export interface IHostConfig {
   useSendCryptoCallback?: boolean;
 }
 
-export interface IHostConfigWithWidgetInstanceId extends IHostConfig {
+export interface IHostConfigWithSdkParams extends Omit<IHostConfig, 'useSendCryptoCallback'> {
   widgetInstanceId: string;
   variant: AllWidgetVariants;
+  useSendCryptoCallbackVersion?: typeof SEND_CRYPTO_SUPPORTED_VERSION;
 }
 
 export interface IAssetInfo {
@@ -227,6 +230,7 @@ export interface IRequestCryptoAccountEvent extends IWidgetEvent {
 }
 
 export interface ISendCryptoEvent extends IWidgetEvent {
+  eventVersion: typeof SEND_CRYPTO_SUPPORTED_VERSION;
   type: InternalEventTypes.SEND_CRYPTO;
   payload: {
     assetSymbol: string;
@@ -278,6 +282,7 @@ export interface IRequestCryptoAccountResultEvent extends IWidgetEvent {
 }
 
 export interface ISendCryptoResultEvent extends IWidgetEvent {
+  eventVersion: typeof SEND_CRYPTO_SUPPORTED_VERSION;
   type: InternalSdkEventTypes.SEND_CRYPTO_RESULT;
   payload:
     | IOnSendCryptoResult

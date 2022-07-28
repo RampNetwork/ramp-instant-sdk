@@ -1,5 +1,6 @@
 import { clearAllBodyScrollLocks, disableBodyScroll } from 'body-scroll-lock';
 import { getBaseUrl, hideWebsiteBelow } from './init-helpers';
+import { SEND_CRYPTO_SUPPORTED_VERSION } from './consts';
 
 import {
   areUrlsEqual,
@@ -13,7 +14,7 @@ import {
 
 import {
   IHostConfig,
-  IHostConfigWithWidgetInstanceId,
+  IHostConfigWithSdkParams,
   InternalEventTypes,
   InternalSdkEventTypes,
   IRequestCryptoAccountEvent,
@@ -27,7 +28,6 @@ import {
   WidgetEventTypes,
   TOnSendCryptoCallback,
   ISendCryptoEvent,
-  ISendCryptoResultEvent,
   IOnSendCryptoResult,
 } from './types';
 
@@ -62,7 +62,7 @@ export class RampInstantSDK {
     shadow: ShadowRoot;
   };
 
-  private _config: IHostConfigWithWidgetInstanceId;
+  private _config: IHostConfigWithSdkParams;
   private _rawNormalizedConfig: IHostConfig;
   private _listeners: TEventListenerDict = initEventListenersDict();
   private _isVisible: boolean = false;
@@ -87,12 +87,9 @@ export class RampInstantSDK {
       ...config,
     });
 
-    const widgetVariant = determineWidgetVariant(this._rawNormalizedConfig);
-
     this._config = {
       ...this._rawNormalizedConfig,
-      variant: widgetVariant,
-      widgetInstanceId: getRandomIntString(),
+      ...this._getHostConfigSdkParams(this._rawNormalizedConfig, config.useSendCryptoCallback),
     };
   }
 
@@ -279,7 +276,7 @@ export class RampInstantSDK {
       }
     };
 
-    if (this._config.useSendCryptoCallback) {
+    if (this._config.useSendCryptoCallbackVersion) {
       this.on(InternalEventTypes.SEND_CRYPTO, this._onSendCrypto);
     }
 
@@ -364,6 +361,11 @@ export class RampInstantSDK {
 
   private async _onSendCrypto(event: ISendCryptoEvent): Promise<void> {
     let result: IOnSendCryptoResult | undefined;
+    if (event.eventVersion !== SEND_CRYPTO_SUPPORTED_VERSION) {
+      // tslint:disable-next-line:no-console
+      console.warn(`unsupported event version - '${event}'. This listener will have no effect.`);
+      return;
+    }
     try {
       result = await this._onSendCryptoCallback?.(
         event.payload.assetSymbol,
@@ -381,6 +383,7 @@ export class RampInstantSDK {
         errorMessage = e.message;
       }
       this._sendEventToWidget({
+        eventVersion: SEND_CRYPTO_SUPPORTED_VERSION,
         type: InternalSdkEventTypes.SEND_CRYPTO_RESULT,
         payload: {
           error: errorMessage,
@@ -390,6 +393,7 @@ export class RampInstantSDK {
     }
 
     this._sendEventToWidget({
+      eventVersion: SEND_CRYPTO_SUPPORTED_VERSION,
       type: InternalSdkEventTypes.SEND_CRYPTO_RESULT,
       payload: {
         txHash: result.txHash,
@@ -456,5 +460,23 @@ export class RampInstantSDK {
 
   private _isConfiguredAsEmbedded(): boolean {
     return ['embedded-desktop', 'embedded-mobile'].includes(this._rawNormalizedConfig.variant!);
+  }
+
+  private _getHostConfigSdkParams(
+    config: IHostConfig,
+    useSendCryptoCallback?: boolean
+  ): Pick<
+    IHostConfigWithSdkParams,
+    'variant' | 'widgetInstanceId' | 'useSendCryptoCallbackVersion'
+  > {
+    const widgetVariant = determineWidgetVariant(config);
+
+    return {
+      variant: widgetVariant,
+      widgetInstanceId: getRandomIntString(),
+      ...(useSendCryptoCallback
+        ? { useSendCryptoCallbackVersion: SEND_CRYPTO_SUPPORTED_VERSION }
+        : {}),
+    };
   }
 }

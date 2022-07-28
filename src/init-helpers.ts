@@ -1,7 +1,7 @@
 import { baseWidgetUrl } from './consts';
 import {
   AllWidgetVariants,
-  IHostConfigWithWidgetInstanceId,
+  IHostConfigWithSdkParams,
   InternalEventTypes,
   TAllEvents,
 } from './types';
@@ -12,11 +12,11 @@ import {
   widgetDesktopWidth,
 } from './utils';
 
-export function getBaseUrl(config: IHostConfigWithWidgetInstanceId): URL {
+export function getBaseUrl(config: IHostConfigWithSdkParams): URL {
   return new URL(config.url || baseWidgetUrl);
 }
 
-export function initWidgetIframeUrl(config: IHostConfigWithWidgetInstanceId): string {
+export function initWidgetIframeUrl(config: IHostConfigWithSdkParams): string {
   const baseUrl = getBaseUrl(config);
   const hostUrl = window.location.origin;
 
@@ -50,7 +50,7 @@ export function hideWebsiteBelow(
 export function initDOMNodeWithOverlay(
   url: string,
   dispatch: (event: TAllEvents) => void,
-  config: IHostConfigWithWidgetInstanceId
+  config: IHostConfigWithSdkParams
 ): {
   body: HTMLBodyElement | null;
   iframe: HTMLIFrameElement;
@@ -87,7 +87,7 @@ export function initDOMNodeWithOverlay(
 export function initDOMNodeWithoutOverlay(
   url: string,
   _dispatch: (event: TAllEvents) => void,
-  config: IHostConfigWithWidgetInstanceId
+  config: IHostConfigWithSdkParams
 ): {
   body: HTMLBodyElement | null;
   iframe: HTMLIFrameElement;
