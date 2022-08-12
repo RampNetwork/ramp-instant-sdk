@@ -1,3 +1,5 @@
+import { SEND_CRYPTO_SUPPORTED_VERSION } from './consts';
+
 type TAsset = string;
 type TEthAddress = string;
 type TSwapAmount = string;
@@ -20,6 +22,7 @@ type TActionDetails = string;
 type TWebhookStatusUrl = string;
 type TFinalUrl = string;
 type TContainerNode = HTMLElement;
+type TFlow = 'ONRAMP' | 'OFFRAMP';
 
 export enum PaymentMethodName {
   MANUAL_BANK_TRANSFER = 'MANUAL_BANK_TRANSFER',
@@ -61,11 +64,16 @@ export interface IHostConfig {
   containerNode?: TContainerNode;
   selectedCountryCode?: string;
   defaultAsset?: TAsset;
+  defaultFlow?: TFlow;
+  enabledFlows?: TFlow[];
+  offrampWebhookV3Url?: TWebhookStatusUrl;
+  useSendCryptoCallback?: boolean;
 }
 
-export interface IHostConfigWithWidgetInstanceId extends IHostConfig {
+export interface IHostConfigWithSdkParams extends Omit<IHostConfig, 'useSendCryptoCallback'> {
   widgetInstanceId: string;
   variant: AllWidgetVariants;
+  useSendCryptoCallbackVersion?: typeof SEND_CRYPTO_SUPPORTED_VERSION;
 }
 
 export interface IAssetInfo {
@@ -93,6 +101,26 @@ export interface IPurchase {
   createdAt: TDateString;
   updatedAt: TDateString;
   status: PurchaseStatus;
+}
+
+export interface IOfframpPurchase {
+  id: string;
+  createdAt: string;
+  crypto: {
+    amount: string;
+    assetInfo: {
+      address: string | null;
+      symbol: string;
+      chain: string;
+      type: string;
+      name: string;
+      decimals: number;
+    };
+  };
+  fiat: {
+    amount: number;
+    currencySymbol: string;
+  };
 }
 
 export interface IAction {
@@ -129,6 +157,7 @@ export enum WidgetEventTypes {
   WIDGET_CONFIG_DONE = 'WIDGET_CONFIG_DONE',
   WIDGET_CONFIG_FAILED = 'WIDGET_CONFIG_FAILED',
   PURCHASE_CREATED = 'PURCHASE_CREATED',
+  OFFRAMP_PURCHASE_CREATED = 'OFFRAMP_PURCHASE_CREATED',
 }
 
 export enum InternalEventTypes {
@@ -136,6 +165,7 @@ export enum InternalEventTypes {
   WIDGET_CLOSE_REQUEST_CANCELLED = 'WIDGET_CLOSE_REQUEST_CANCELLED',
   WIDGET_CLOSE_REQUEST_CONFIRMED = 'WIDGET_CLOSE_REQUEST_CONFIRMED',
   REQUEST_CRYPTO_ACCOUNT = 'REQUEST_CRYPTO_ACCOUNT',
+  SEND_CRYPTO = 'SEND_CRYPTO',
 }
 
 export type TAllEventTypes = WidgetEventTypes | InternalEventTypes;
@@ -151,6 +181,17 @@ export interface IPurchaseCreatedEvent extends IWidgetEvent {
   type: WidgetEventTypes.PURCHASE_CREATED;
   payload: {
     purchase: IPurchase;
+    purchaseViewToken: string;
+    apiUrl: string;
+  };
+  widgetInstanceId: string;
+  internal?: false;
+}
+
+export interface IOfframpPurchaseCreatedEvent extends IWidgetEvent {
+  type: WidgetEventTypes.OFFRAMP_PURCHASE_CREATED;
+  payload: {
+    purchase: IOfframpPurchase;
     purchaseViewToken: string;
     apiUrl: string;
   };
@@ -188,6 +229,17 @@ export interface IRequestCryptoAccountEvent extends IWidgetEvent {
   widgetInstanceId?: string;
 }
 
+export interface ISendCryptoEvent extends IWidgetEvent {
+  eventVersion: typeof SEND_CRYPTO_SUPPORTED_VERSION;
+  type: InternalEventTypes.SEND_CRYPTO;
+  payload: {
+    assetSymbol: string;
+    amount: string;
+    address: string;
+  };
+  widgetInstanceId?: string;
+}
+
 export interface IWidgetCloseRequestCancelledEvent extends IWidgetEvent {
   type: InternalEventTypes.WIDGET_CLOSE_REQUEST_CANCELLED;
   payload: null;
@@ -204,16 +256,19 @@ export type TWidgetEvents =
   | IWidgetCloseEvent
   | IWidgetConfigDoneEvent
   | IWidgetConfigFailedEvent
-  | IPurchaseCreatedEvent;
+  | IPurchaseCreatedEvent
+  | IOfframpPurchaseCreatedEvent;
 
 export type TInternalEvents =
   | IWidgetCloseRequestEvent
   | IWidgetCloseRequestCancelledEvent
   | IWidgetCloseRequestConfirmedEvent
-  | IRequestCryptoAccountEvent;
+  | IRequestCryptoAccountEvent
+  | ISendCryptoEvent;
 
 export enum InternalSdkEventTypes {
   REQUEST_CRYPTO_ACCOUNT_RESULT = 'REQUEST_CRYPTO_ACCOUNT_RESULT',
+  SEND_CRYPTO_RESULT = 'SEND_CRYPTO_RESULT',
 }
 
 export interface IRequestCryptoAccountResultEvent extends IWidgetEvent {
@@ -226,7 +281,18 @@ export interface IRequestCryptoAccountResultEvent extends IWidgetEvent {
   widgetInstanceId?: string;
 }
 
-export type TSdkEvents = IRequestCryptoAccountResultEvent;
+export interface ISendCryptoResultEvent extends IWidgetEvent {
+  eventVersion: typeof SEND_CRYPTO_SUPPORTED_VERSION;
+  type: InternalSdkEventTypes.SEND_CRYPTO_RESULT;
+  payload:
+    | IOnSendCryptoResult
+    | {
+        error: string | undefined;
+      };
+  widgetInstanceId?: string;
+}
+
+export type TSdkEvents = IRequestCryptoAccountResultEvent | ISendCryptoResultEvent;
 
 export type TAllEvents = TWidgetEvents | TInternalEvents;
 
@@ -258,7 +324,17 @@ export interface IOnRequestCryptoAccountResult {
   assetSymbol?: string;
 }
 
+export interface IOnSendCryptoResult {
+  txHash: string;
+}
+
 export type TOnRequestCryptoAccountCallback = (
   type: string,
   assetSymbol: string
 ) => Promise<IOnRequestCryptoAccountResult>;
+
+export type TOnSendCryptoCallback = (
+  assetSymbol: string,
+  amount: string,
+  address: string
+) => Promise<IOnSendCryptoResult>;

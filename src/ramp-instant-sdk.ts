@@ -1,5 +1,6 @@
 import { clearAllBodyScrollLocks, disableBodyScroll } from 'body-scroll-lock';
 import { getBaseUrl, hideWebsiteBelow } from './init-helpers';
+import { SEND_CRYPTO_SUPPORTED_VERSION } from './consts';
 
 import {
   areUrlsEqual,
@@ -13,7 +14,7 @@ import {
 
 import {
   IHostConfig,
-  IHostConfigWithWidgetInstanceId,
+  IHostConfigWithSdkParams,
   InternalEventTypes,
   InternalSdkEventTypes,
   IRequestCryptoAccountEvent,
@@ -25,6 +26,9 @@ import {
   TSdkEvents,
   TWidgetEvents,
   WidgetEventTypes,
+  TOnSendCryptoCallback,
+  ISendCryptoEvent,
+  IOnSendCryptoResult,
 } from './types';
 
 import {
@@ -58,10 +62,11 @@ export class RampInstantSDK {
     shadow: ShadowRoot;
   };
 
-  private _config: IHostConfigWithWidgetInstanceId;
+  private _config: IHostConfigWithSdkParams;
   private _rawNormalizedConfig: IHostConfig;
   private _listeners: TEventListenerDict = initEventListenersDict();
   private _isVisible: boolean = false;
+  private _onSendCryptoCallback: TOnSendCryptoCallback | undefined = undefined;
 
   constructor(config: IHostConfig) {
     importFonts();
@@ -75,18 +80,16 @@ export class RampInstantSDK {
     this._on = this._on.bind(this);
     this._registerSdkEventHandlers = this._registerSdkEventHandlers.bind(this);
     this._subscribeToWidgetEvents = this._subscribeToWidgetEvents.bind(this);
+    this._onSendCrypto = this._onSendCrypto.bind(this);
 
     this._rawNormalizedConfig = normalizeConfigAndLogErrorsOnInvalidFields({
       variant: 'desktop',
       ...config,
     });
 
-    const widgetVariant = determineWidgetVariant(this._rawNormalizedConfig);
-
     this._config = {
       ...this._rawNormalizedConfig,
-      variant: widgetVariant,
-      widgetInstanceId: getRandomIntString(),
+      ...this._getHostConfigSdkParams(this._rawNormalizedConfig, config.useSendCryptoCallback),
     };
   }
 
@@ -170,6 +173,11 @@ export class RampInstantSDK {
       widgetInstanceId: this._config.widgetInstanceId,
     });
 
+    return this;
+  }
+
+  public onSendCrypto(callback: TOnSendCryptoCallback): RampInstantSDK {
+    this._onSendCryptoCallback = callback;
     return this;
   }
 
@@ -268,6 +276,10 @@ export class RampInstantSDK {
       }
     };
 
+    if (this._config.useSendCryptoCallbackVersion) {
+      this.on(InternalEventTypes.SEND_CRYPTO, this._onSendCrypto);
+    }
+
     this._on(WidgetEventTypes.WIDGET_CONFIG_DONE, onConfigEvent, true);
     this._on(WidgetEventTypes.WIDGET_CONFIG_FAILED, onConfigEvent, true);
 
@@ -347,6 +359,48 @@ export class RampInstantSDK {
     }
   }
 
+  private async _onSendCrypto(event: ISendCryptoEvent): Promise<void> {
+    let result: IOnSendCryptoResult | undefined;
+    if (event.eventVersion !== SEND_CRYPTO_SUPPORTED_VERSION) {
+      // tslint:disable-next-line:no-console
+      console.warn(`unsupported event version - '${event}'. This listener will have no effect.`);
+      return;
+    }
+    try {
+      result = await this._onSendCryptoCallback?.(
+        event.payload.assetSymbol,
+        event.payload.amount,
+        event.payload.address
+      );
+      if (!result?.txHash) {
+        throw new Error('Missing txHash in the callback result');
+      }
+    } catch (e) {
+      let errorMessage: string | undefined;
+      if (typeof e === 'string') {
+        errorMessage = e;
+      } else if (e instanceof Error) {
+        errorMessage = e.message;
+      }
+      this._sendEventToWidget({
+        eventVersion: SEND_CRYPTO_SUPPORTED_VERSION,
+        type: InternalSdkEventTypes.SEND_CRYPTO_RESULT,
+        payload: {
+          error: errorMessage,
+        },
+      });
+      return;
+    }
+
+    this._sendEventToWidget({
+      eventVersion: SEND_CRYPTO_SUPPORTED_VERSION,
+      type: InternalSdkEventTypes.SEND_CRYPTO_RESULT,
+      payload: {
+        txHash: result.txHash,
+      },
+    });
+  }
+
   // Event subscriptions aren't cleared so that host can receive a PAYMENT_SUCCESSFUL event
   // even after the widget has been closed
   private _teardownEventSubscriptions(): void {
@@ -406,5 +460,23 @@ export class RampInstantSDK {
 
   private _isConfiguredAsEmbedded(): boolean {
     return ['embedded-desktop', 'embedded-mobile'].includes(this._rawNormalizedConfig.variant!);
+  }
+
+  private _getHostConfigSdkParams(
+    config: IHostConfig,
+    useSendCryptoCallback?: boolean
+  ): Pick<
+    IHostConfigWithSdkParams,
+    'variant' | 'widgetInstanceId' | 'useSendCryptoCallbackVersion'
+  > {
+    const widgetVariant = determineWidgetVariant(config);
+
+    return {
+      variant: widgetVariant,
+      widgetInstanceId: getRandomIntString(),
+      ...(useSendCryptoCallback
+        ? { useSendCryptoCallbackVersion: SEND_CRYPTO_SUPPORTED_VERSION }
+        : {}),
+    };
   }
 }
