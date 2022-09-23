@@ -194,7 +194,7 @@ function prepareIframeNode(
     );
   }
 
-  iframe.setAttribute('allow', 'microphone; camera; clipboard-read; clipboard-write');
+  iframe.setAttribute('allow', 'payment; microphone; camera; clipboard-read; clipboard-write');
 
   iframe.classList.add('iframe');
 
