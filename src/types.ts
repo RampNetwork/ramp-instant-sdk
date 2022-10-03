@@ -49,6 +49,7 @@ export type TPurchaseExternalId = string;
 
 export interface IHostConfig {
   swapAsset?: TAsset;
+  offrampAsset?: TAsset;
   swapAmount?: TSwapAmount;
   fiatValue?: TFiatValue;
   fiatCurrency?: TFiatCurrency;
