@@ -104,19 +104,21 @@ export interface IPurchase {
   status: PurchaseStatus;
 }
 
+export interface AssetInfo {
+  address: string | null;
+  symbol: string;
+  chain: string;
+  type: string;
+  name: string;
+  decimals: number;
+}
+
 export interface IOfframpSale {
   id: string;
   createdAt: string;
   crypto: {
     amount: string;
-    assetInfo: {
-      address: string | null;
-      symbol: string;
-      chain: string;
-      type: string;
-      name: string;
-      decimals: number;
-    };
+    assetInfo: AssetInfo;
   };
   fiat: {
     amount: number;
@@ -234,7 +236,7 @@ export interface ISendCryptoEvent extends IWidgetEvent {
   eventVersion: typeof SEND_CRYPTO_SUPPORTED_VERSION;
   type: InternalEventTypes.SEND_CRYPTO;
   payload: {
-    assetSymbol: string;
+    assetInfo: AssetInfo;
     amount: string;
     address: string;
   };
@@ -335,7 +337,7 @@ export type TOnRequestCryptoAccountCallback = (
 ) => Promise<IOnRequestCryptoAccountResult>;
 
 export type TOnSendCryptoCallback = (
-  assetSymbol: string,
+  assetInfo: AssetInfo,
   amount: string,
   address: string
 ) => Promise<IOnSendCryptoResult>;
