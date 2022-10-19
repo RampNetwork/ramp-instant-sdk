@@ -9,7 +9,7 @@ describe('Initialize test', () => {
           swapAsset: 'ETH',
           hostAppName: 'Test',
           hostLogoUrl: 'http://localhost:8080/image.png',
-        })
+        }),
     ).not.toThrow();
   });
 });
