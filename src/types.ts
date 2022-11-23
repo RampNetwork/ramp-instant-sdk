@@ -299,7 +299,13 @@ export type TSdkEvents = IRequestCryptoAccountResultEvent | ISendCryptoResultEve
 
 export type TAllEvents = TWidgetEvents | TInternalEvents;
 
-export type WidgetVariantTypes = 'desktop' | 'mobile' | 'hosted-desktop' | 'hosted-mobile';
+export type WidgetVariantTypes =
+  | 'desktop'
+  | 'mobile'
+  | 'hosted-desktop'
+  | 'hosted-mobile'
+  | 'webview-desktop'
+  | 'webview-mobile';
 
 export type SyntheticWidgetVariants =
   | 'hosted-auto'

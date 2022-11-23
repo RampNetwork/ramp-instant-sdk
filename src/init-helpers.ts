@@ -298,7 +298,10 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
   const styles = document.createElement('style');
 
   const isMobile =
-    variant === 'mobile' || variant === 'hosted-mobile' || variant === 'embedded-mobile';
+    variant === 'mobile' ||
+    variant === 'hosted-mobile' ||
+    variant === 'embedded-mobile' ||
+    variant === 'webview-mobile';
   const isEmbedded = variant === 'embedded-mobile' || variant === 'embedded-desktop';
 
   styles.textContent = `
