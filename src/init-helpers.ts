@@ -424,6 +424,7 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
       user-select: none;
       visibility: hidden;
       position: absolute;
+      color-scheme: only light;
     }
 
     .iframe.visible {
