@@ -13,7 +13,7 @@ import {
 } from './utils';
 
 export function getBaseUrl(config: IHostConfigWithSdkParams): URL {
-  return new URL(config.url || baseWidgetUrl);
+  return new URL(config?.url || baseWidgetUrl);
 }
 
 export function initWidgetIframeUrl(config: IHostConfigWithSdkParams): string {
@@ -35,7 +35,7 @@ export function initWidgetIframeUrl(config: IHostConfigWithSdkParams): string {
 
 export function hideWebsiteBelow(
   parent: Element | ShadowRoot,
-  containerWidth?: number | undefined
+  containerWidth?: number | undefined,
 ): void {
   const backgroundWebsiteHider = document.createElement('div');
   backgroundWebsiteHider.classList.add('background-hider');
@@ -50,7 +50,7 @@ export function hideWebsiteBelow(
 export function initDOMNodeWithOverlay(
   url: string,
   dispatch: (event: TAllEvents) => void,
-  config: IHostConfigWithSdkParams
+  config: IHostConfigWithSdkParams,
 ): {
   body: HTMLBodyElement | null;
   iframe: HTMLIFrameElement;
@@ -87,7 +87,7 @@ export function initDOMNodeWithOverlay(
 export function initDOMNodeWithoutOverlay(
   url: string,
   _dispatch: (event: TAllEvents) => void,
-  config: IHostConfigWithSdkParams
+  config: IHostConfigWithSdkParams,
 ): {
   body: HTMLBodyElement | null;
   iframe: HTMLIFrameElement;
@@ -147,7 +147,7 @@ export function importFonts(): void {
 
   font.setAttribute(
     'href',
-    'https://fonts.googleapis.com/css?family=Poppins:200,400,500,600,700&display=swap&subset=latin-ext'
+    'https://fonts.googleapis.com/css?family=Poppins:200,400,500,600,700&display=swap&subset=latin-ext',
   );
   font.setAttribute('rel', 'stylesheet');
   font.setAttribute('data-ramp-font', '');
@@ -158,7 +158,7 @@ export function importFonts(): void {
 function prepareIframeNode(
   url: string,
   variant: AllWidgetVariants,
-  containerNode?: HTMLElement
+  containerNode?: HTMLElement,
 ): HTMLIFrameElement {
   const iframe = document.createElement('iframe');
 
@@ -169,28 +169,28 @@ function prepareIframeNode(
       'width',
       variant === 'desktop' || variant === 'embedded-desktop'
         ? widgetDesktopWidth.toString()
-        : containerNode.getBoundingClientRect().width.toString()
+        : containerNode.getBoundingClientRect().width.toString(),
     );
 
     iframe.setAttribute(
       'height',
       variant === 'desktop' || variant === 'embedded-desktop'
         ? widgetDesktopHeight.toString()
-        : containerNode.getBoundingClientRect().height.toString()
+        : containerNode.getBoundingClientRect().height.toString(),
     );
   } else {
     iframe.setAttribute(
       'width',
       variant === 'desktop' || variant === 'embedded-desktop'
         ? widgetDesktopWidth.toString()
-        : window.innerWidth.toString()
+        : window.innerWidth.toString(),
     );
 
     iframe.setAttribute(
       'height',
       variant === 'desktop' || variant === 'embedded-desktop'
         ? widgetDesktopHeight.toString()
-        : window.innerHeight.toString()
+        : window.innerHeight.toString(),
     );
   }
 
@@ -203,7 +203,7 @@ function prepareIframeNode(
 
 function prepareOverlayNode(
   iframe: HTMLIFrameElement,
-  dispatch: (event: TAllEvents) => void
+  dispatch: (event: TAllEvents) => void,
 ): HTMLDivElement {
   const overlay = document.createElement('div');
 
@@ -237,7 +237,11 @@ function prepareOverlayNode(
 }
 
 export function areUrlsEqual(url0: string, url1: string): boolean {
-  return new URL(url0).toString() === new URL(url1).toString();
+  try {
+    return new URL(url0).toString() === new URL(url1).toString();
+  } catch (err) {
+    return false;
+  }
 }
 
 export function isCloseModalAlreadyOpen(containerNode: HTMLElement): boolean {
