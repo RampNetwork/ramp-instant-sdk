@@ -42,6 +42,7 @@ export function normalizeConfigAndLogErrorsOnInvalidFields(
       'auto',
       'embedded-desktop',
       'embedded-mobile',
+      'webview-mobile',
     ].includes(config.variant!)
   ) {
     configCopy.variant = 'desktop';
@@ -117,7 +118,8 @@ export function determineWidgetVariant(config: IHostConfig): AllWidgetVariants {
     variant === 'hosted-mobile' ||
     variant === 'hosted-desktop' ||
     variant === 'embedded-desktop' ||
-    variant === 'embedded-mobile'
+    variant === 'embedded-mobile' ||
+    variant === 'webview-mobile'
   ) {
     return variant;
   }
