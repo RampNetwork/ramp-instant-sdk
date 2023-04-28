@@ -1,6 +1,6 @@
 {
   "name": "@ramp-network/ramp-instant-sdk",
-  "version": "4.0.2",
+  "version": "4.0.3-rc2",
   "description": "SDK for Ramp Instant",
   "keywords": [],
   "main": "dist/ramp-instant-sdk.umd.js",

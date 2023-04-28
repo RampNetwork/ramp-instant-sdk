@@ -459,7 +459,9 @@ export class RampInstantSDK {
   }
 
   private _isConfiguredAsEmbedded(): boolean {
-    return ['embedded-desktop', 'embedded-mobile'].includes(this._rawNormalizedConfig.variant!);
+    return ['embedded-desktop', 'embedded-mobile', 'webview-mobile'].includes(
+      this._rawNormalizedConfig.variant!
+    );
   }
 
   private _getHostConfigSdkParams(
