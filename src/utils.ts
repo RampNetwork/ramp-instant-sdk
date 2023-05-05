@@ -55,11 +55,15 @@ export function normalizeConfigAndLogErrorsOnInvalidFields(
     });
   }
 
-  if (config.variant === 'embedded-desktop' || config.variant === 'embedded-mobile') {
+  if (
+    config.variant === 'embedded-desktop' ||
+    config.variant === 'embedded-mobile' ||
+    config.variant === 'webview-mobile'
+  ) {
     validateContainerNode(config.containerNode, config.variant);
   }
 
-  if (!['embedded-desktop', 'embedded-mobile'].includes(configCopy.variant!)) {
+  if (!['embedded-desktop', 'embedded-mobile', 'webview-mobile'].includes(configCopy.variant!)) {
     delete configCopy.containerNode;
   }
 
@@ -139,7 +143,7 @@ export function isHtmlElement(element: Element): element is HTMLElement {
 
 function validateContainerNode(
   containerNode: HTMLElement | undefined,
-  variant: SyntheticWidgetVariants
+  variant: SyntheticWidgetVariants | 'webview-mobile'
 ): void {
   if (!document.body) {
     throw new Error("Couldn't find <body> element.");
@@ -163,7 +167,7 @@ function validateContainerNode(
     if (height + 1 < widgetDesktopHeight) {
       throw new Error(`Container node must be at least ${widgetDesktopHeight}px tall.`);
     }
-  } else if (variant === 'embedded-mobile') {
+  } else if (variant === 'embedded-mobile' || variant === 'webview-mobile') {
     if (width + 1 < minWidgetMobileWidth) {
       throw new Error(`Container node must be at least ${minWidgetMobileWidth}px wide.`);
     }
