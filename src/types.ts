@@ -72,6 +72,8 @@ export interface IHostConfig {
 }
 
 export interface IHostConfigWithSdkParams extends Omit<IHostConfig, 'useSendCryptoCallback'> {
+  sdkType: 'WEB';
+  sdkVersion: string;
   widgetInstanceId: string;
   variant: AllWidgetVariants;
   useSendCryptoCallbackVersion?: typeof SEND_CRYPTO_SUPPORTED_VERSION;
