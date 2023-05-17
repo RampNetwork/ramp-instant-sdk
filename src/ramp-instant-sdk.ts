@@ -1,6 +1,6 @@
 import { clearAllBodyScrollLocks, disableBodyScroll } from 'body-scroll-lock';
 import { getBaseUrl, hideWebsiteBelow } from './init-helpers';
-import { SEND_CRYPTO_SUPPORTED_VERSION } from './consts';
+import { SDK_VERSION, SEND_CRYPTO_SUPPORTED_VERSION } from './consts';
 
 import {
   areUrlsEqual,
@@ -467,11 +467,13 @@ export class RampInstantSDK {
     useSendCryptoCallback?: boolean
   ): Pick<
     IHostConfigWithSdkParams,
-    'variant' | 'widgetInstanceId' | 'useSendCryptoCallbackVersion'
+    'sdkType' | 'sdkVersion' | 'variant' | 'widgetInstanceId' | 'useSendCryptoCallbackVersion'
   > {
     const widgetVariant = determineWidgetVariant(config);
 
     return {
+      sdkType: 'WEB',
+      sdkVersion: SDK_VERSION,
       variant: widgetVariant,
       widgetInstanceId: getRandomIntString(),
       ...(useSendCryptoCallback

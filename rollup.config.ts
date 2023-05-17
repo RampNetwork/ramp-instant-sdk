@@ -4,6 +4,7 @@ import json from 'rollup-plugin-json';
 import resolve from 'rollup-plugin-node-resolve';
 import sourceMaps from 'rollup-plugin-sourcemaps';
 import typescript from 'rollup-plugin-typescript2';
+import versionInjector from 'rollup-plugin-version-injector';
 
 const pkg = require('./package.json');
 
@@ -38,5 +39,8 @@ export default {
 
     // Resolve source maps to the original source
     sourceMaps(),
+
+    // Inject package.json['version']
+    versionInjector(),
   ],
 };
