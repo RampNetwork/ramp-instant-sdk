@@ -1,0 +1,20 @@
+name: CliCop
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  statuses: write
+
+jobs:
+  clicop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: RampNetwork/clicop@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} # this is passed automatically https://docs.github.com/en/actions/security-guides/automatic-token-authentication
+          clickup_token: ${{ secrets.CLICKUP_TOKEN }}
