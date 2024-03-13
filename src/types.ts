@@ -25,10 +25,13 @@ type TContainerNode = HTMLElement;
 type TFlow = 'ONRAMP' | 'OFFRAMP';
 
 export enum PaymentMethodName {
-  MANUAL_BANK_TRANSFER = 'MANUAL_BANK_TRANSFER',
-  AUTO_BANK_TRANSFER = 'AUTO_BANK_TRANSFER',
-  CARD_PAYMENT = 'CARD_PAYMENT',
-  APPLE_PAY = 'APPLE_PAY',
+  SEPA = 'SEPA',
+  CARD = 'CARD',
+  APPLEPAY = 'APPLEPAY',
+  GOOGLEPAY = 'GOOGLEPAY',
+  PISP = 'PISP',
+  SOFORT = 'SOFORT',
+  PIX = 'PIX',
 }
 
 export enum PurchaseStatus {
@@ -69,6 +72,7 @@ export interface IHostConfig {
   enabledFlows?: TFlow[];
   offrampWebhookV3Url?: TWebhookStatusUrl;
   useSendCryptoCallback?: boolean;
+  paymentMethodType?: PaymentMethodName;
 }
 
 export interface IHostConfigWithSdkParams extends Omit<IHostConfig, 'useSendCryptoCallback'> {
