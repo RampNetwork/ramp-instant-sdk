@@ -31,6 +31,16 @@ export enum PaymentMethodName {
   APPLE_PAY = 'APPLE_PAY',
 }
 
+export enum PaymentMethodType {
+  SEPA = 'SEPA',
+  CARD = 'CARD',
+  APPLEPAY = 'APPLEPAY',
+  GOOGLEPAY = 'GOOGLEPAY',
+  PISP = 'PISP',
+  SOFORT = 'SOFORT',
+  PIX = 'PIX',
+}
+
 export enum PurchaseStatus {
   INITIALIZED = 'INITIALIZED',
   PAYMENT_STARTED = 'PAYMENT_STARTED',
@@ -69,6 +79,7 @@ export interface IHostConfig {
   enabledFlows?: TFlow[];
   offrampWebhookV3Url?: TWebhookStatusUrl;
   useSendCryptoCallback?: boolean;
+  paymentMethodType?: PaymentMethodType;
 }
 
 export interface IHostConfigWithSdkParams extends Omit<IHostConfig, 'useSendCryptoCallback'> {
