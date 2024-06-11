@@ -80,6 +80,7 @@ export interface IHostConfig {
   offrampWebhookV3Url?: TWebhookStatusUrl;
   useSendCryptoCallback?: boolean;
   paymentMethodType?: PaymentMethodType;
+  customExitButton?: boolean;
 }
 
 export interface IHostConfigWithSdkParams extends Omit<IHostConfig, 'useSendCryptoCallback'> {
