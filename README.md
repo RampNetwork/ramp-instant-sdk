@@ -1,6 +1,6 @@
 # Ramp Instant SDK
 
-`@ramp-network/ramp-instant-sdk` is a library that allows you to easily integrate the Ramp widget into your web app and communicate with it.
+`@ramp-network/ramp-instant-sdk` is a library that allows you to easily integrate the Ramp Network's widget into your web app and communicate with it.
 
 It's not necessary to use it, although it's strongly recommended.
 
