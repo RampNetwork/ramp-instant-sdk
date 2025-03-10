@@ -163,6 +163,7 @@ function prepareIframeNode(
   const iframe = document.createElement('iframe');
 
   iframe.setAttribute('src', url);
+  iframe.setAttribute('credentialless', 'credentialless');
 
   if (containerNode) {
     iframe.setAttribute(
