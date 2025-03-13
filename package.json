@@ -22,8 +22,8 @@
   "scripts": {
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
-    "build": "tsc --module commonjs && rollup -c rollup.config.ts",
-    "start": "rollup -c rollup.config.ts -w",
+    "build": "tsc --module commonjs && rollup -c rollup.config.js",
+    "start": "rollup -c rollup.config.js -w",
     "test": "jest --coverage --env=jsdom",
     "test:watch": "jest --coverage --watch --env=jsdom",
     "test:prod": "npm run lint && npm run test -- --no-cache",

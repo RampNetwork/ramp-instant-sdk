@@ -1,16 +1,16 @@
-import camelCase from 'lodash.camelcase';
-import commonjs from 'rollup-plugin-commonjs';
-import json from 'rollup-plugin-json';
-import resolve from 'rollup-plugin-node-resolve';
-import sourceMaps from 'rollup-plugin-sourcemaps';
-import typescript from 'rollup-plugin-typescript2';
-import versionInjector from 'rollup-plugin-version-injector';
+const camelCase = require('lodash.camelcase');
+const commonjs = require('rollup-plugin-commonjs');
+const json = require('rollup-plugin-json');
+const resolve = require('rollup-plugin-node-resolve');
+const sourceMaps = require('rollup-plugin-sourcemaps');
+const typescript = require('rollup-plugin-typescript2');
+const versionInjector = require('rollup-plugin-version-injector');
 
 const pkg = require('./package.json');
 
 const libraryName = 'ramp-instant-sdk';
 
-export default {
+module.exports = {
   input: `src/${libraryName}.ts`,
   output: [
     { file: pkg.main, name: camelCase(libraryName), format: 'umd', sourcemap: true },
