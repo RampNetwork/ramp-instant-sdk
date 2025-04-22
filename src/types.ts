@@ -81,6 +81,7 @@ export interface IHostConfig {
   useSendCryptoCallback?: boolean;
   paymentMethodType?: PaymentMethodType;
   hideExitButton?: boolean;
+  closeable?: boolean;
 }
 
 export interface IHostConfigWithSdkParams extends Omit<IHostConfig, 'useSendCryptoCallback'> {
@@ -178,6 +179,7 @@ export enum WidgetEventTypes {
 }
 
 export enum InternalEventTypes {
+  APP_VERSION = 'APP_VERSION',
   WIDGET_CLOSE_REQUEST = 'WIDGET_CLOSE_REQUEST',
   WIDGET_CLOSE_REQUEST_CANCELLED = 'WIDGET_CLOSE_REQUEST_CANCELLED',
   WIDGET_CLOSE_REQUEST_CONFIRMED = 'WIDGET_CLOSE_REQUEST_CONFIRMED',
@@ -269,6 +271,15 @@ export interface IWidgetCloseRequestConfirmedEvent extends IWidgetEvent {
   internal: true;
 }
 
+export interface IAppVersionEvent extends IWidgetEvent {
+  type: InternalEventTypes.APP_VERSION;
+  payload: {
+    version: `${number}.${number}`;
+  };
+  widgetInstanceId: string;
+  internal: true;
+}
+
 export type TWidgetEvents =
   | IWidgetCloseEvent
   | IWidgetConfigDoneEvent
@@ -281,7 +292,8 @@ export type TInternalEvents =
   | IWidgetCloseRequestCancelledEvent
   | IWidgetCloseRequestConfirmedEvent
   | IRequestCryptoAccountEvent
-  | ISendCryptoEvent;
+  | ISendCryptoEvent
+  | IAppVersionEvent;
 
 export enum InternalSdkEventTypes {
   REQUEST_CRYPTO_ACCOUNT_RESULT = 'REQUEST_CRYPTO_ACCOUNT_RESULT',

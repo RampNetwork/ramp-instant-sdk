@@ -137,7 +137,7 @@ export function isHtmlElement(element: Element): element is HTMLElement {
 
 function validateContainerNode(
   containerNode: HTMLElement | undefined,
-  variant: SyntheticWidgetVariants
+  _variant: SyntheticWidgetVariants
 ): void {
   if (!document.body) {
     throw new Error("Couldn't find <body> element.");
@@ -149,26 +149,6 @@ function validateContainerNode(
 
   if (!document.body.contains(containerNode)) {
     throw new Error('Container node must be attached to the document.');
-  }
-
-  const { width, height } = containerNode.getBoundingClientRect();
-
-  if (variant === 'embedded-desktop') {
-    if (width + 1 < widgetDesktopWidth) {
-      throw new Error(`Container node must be at least ${widgetDesktopWidth}px wide.`);
-    }
-
-    if (height + 1 < widgetDesktopHeight) {
-      throw new Error(`Container node must be at least ${widgetDesktopHeight}px tall.`);
-    }
-  } else if (variant === 'embedded-mobile') {
-    if (width + 1 < minWidgetMobileWidth) {
-      throw new Error(`Container node must be at least ${minWidgetMobileWidth}px wide.`);
-    }
-
-    if (height + 1 < minWidgetMobileHeight) {
-      throw new Error(`Container node must be at least ${minWidgetMobileHeight}px tall.`);
-    }
   }
 }
 

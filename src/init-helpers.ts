@@ -94,6 +94,7 @@ export function initDOMNodeWithoutOverlay(
   overlay: null;
   shadow: ShadowRoot;
   shadowHost: HTMLDivElement;
+  container: HTMLDivElement;
 } {
   const body = document.querySelector('body');
 
@@ -106,6 +107,7 @@ export function initDOMNodeWithoutOverlay(
 
   const container = document.createElement('div');
   container.classList.add('embedded-container');
+  container.classList.add('constrained');
 
   shadow.appendChild(container);
 
@@ -135,6 +137,7 @@ export function initDOMNodeWithoutOverlay(
     overlay: null,
     shadow,
     shadowHost,
+    container,
   };
 }
 
@@ -198,6 +201,56 @@ function prepareIframeNode(
   iframe.setAttribute('allow', 'payment; microphone; camera; clipboard-read; clipboard-write');
 
   iframe.classList.add('iframe');
+
+  return iframe;
+}
+
+export function makeIframeResponsive(
+  iframe: HTMLIFrameElement,
+  container?: HTMLDivElement,
+  containerNode?: HTMLElement
+) {
+  if (container?.classList.contains('constrained')) {
+    container.classList.remove('constrained');
+  }
+
+  const updateIframeSize = () => {
+    if (containerNode) {
+      iframe.setAttribute('width', containerNode.getBoundingClientRect().width.toString());
+      iframe.setAttribute('height', containerNode.getBoundingClientRect().height.toString());
+    } else {
+      iframe.setAttribute('width', window.innerWidth.toString());
+      iframe.setAttribute('height', window.innerHeight.toString());
+    }
+  };
+
+  updateIframeSize();
+
+  // Create a ResizeObserver to watch for size changes
+  const resizeObserver = new ResizeObserver(() => {
+    updateIframeSize();
+  });
+
+  // Observe either the containerNode or document body for size changes
+  if (containerNode) {
+    resizeObserver.observe(containerNode);
+  } else {
+    resizeObserver.observe(document.body);
+  }
+
+  // Clean up the observer when the iframe is removed
+  const parentNode = iframe.parentNode;
+  if (parentNode) {
+    const mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (Array.from(mutation.removedNodes).includes(iframe)) {
+          resizeObserver.disconnect();
+          mutationObserver.disconnect();
+        }
+      });
+    });
+    mutationObserver.observe(parentNode, { childList: true });
+  }
 
   return iframe;
 }
@@ -326,7 +379,7 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
       top: 0;
       left: 0;
       overflow: hidden;
-      background-color: rgba(166, 174, 185, 0.7);
+      background-color: rgba(0, 0, 0, 0.5);
       display: flex;
       flex-flow: row nowrap;
       justify-content: center;
@@ -342,6 +395,9 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
       flex-flow: row nowrap;
       justify-content: center;
       ${isMobile ? 'align-items: flex-start;' : 'align-items: center;'}
+    }
+
+    .embedded-container.constrained {
       min-width: ${isMobile ? minWidgetMobileWidth : widgetDesktopWidth}px;
       min-height: ${isMobile ? minWidgetMobileHeight : widgetDesktopHeight}px;
     }

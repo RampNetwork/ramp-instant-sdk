@@ -1,5 +1,5 @@
 import { clearAllBodyScrollLocks, disableBodyScroll } from 'body-scroll-lock';
-import { getBaseUrl, hideWebsiteBelow } from './init-helpers';
+import { getBaseUrl, hideWebsiteBelow, makeIframeResponsive } from './init-helpers';
 import { SDK_VERSION, SEND_CRYPTO_SUPPORTED_VERSION } from './consts';
 
 import {
@@ -29,6 +29,7 @@ import {
   TOnSendCryptoCallback,
   ISendCryptoEvent,
   IOnSendCryptoResult,
+  IAppVersionEvent,
 } from './types';
 
 import {
@@ -40,16 +41,16 @@ import {
 } from './utils';
 
 export {
-  IWidgetCloseEvent as WidgetCloseEvent,
-  IWidgetCloseRequestCancelledEvent as WidgetCloseRequestCancelledEvent,
-  IWidgetCloseRequestConfirmedEvent as WidgetCloseRequestConfirmedEvent,
-  IWidgetCloseRequestEvent as WidgetCloseRequestEvent,
-  IWidgetConfigDoneEvent as WidgetConfigDoneEvent,
-  IWidgetEvent as RampInstantEvent,
-  TWidgetEvents as RampInstantEvents,
+  type IWidgetCloseEvent as WidgetCloseEvent,
+  type IWidgetCloseRequestCancelledEvent as WidgetCloseRequestCancelledEvent,
+  type IWidgetCloseRequestConfirmedEvent as WidgetCloseRequestConfirmedEvent,
+  type IWidgetCloseRequestEvent as WidgetCloseRequestEvent,
+  type IWidgetConfigDoneEvent as WidgetConfigDoneEvent,
+  type IWidgetEvent as RampInstantEvent,
+  type TWidgetEvents as RampInstantEvents,
   WidgetEventTypes as RampInstantEventTypes,
-  AllWidgetVariants as RampInstantWidgetVariantTypes,
-  IPurchase as RampInstantPurchase,
+  type AllWidgetVariants as RampInstantWidgetVariantTypes,
+  type IPurchase as RampInstantPurchase,
 } from './types';
 
 export class RampInstantSDK {
@@ -60,6 +61,7 @@ export class RampInstantSDK {
     overlay: HTMLDivElement | null;
     shadowHost: HTMLDivElement;
     shadow: ShadowRoot;
+    container?: HTMLDivElement;
   };
 
   private _config: IHostConfigWithSdkParams;
@@ -244,6 +246,25 @@ export class RampInstantSDK {
 
   private _registerSdkEventHandlers(): void {
     this._on(
+      InternalEventTypes.APP_VERSION,
+      (event: IAppVersionEvent) => {
+        const [major] = event.payload.version.split('.') ?? [];
+        const parsedMajor = Number(major);
+
+        if (parsedMajor >= 2 && this.domNodes?.iframe) {
+          makeIframeResponsive(
+            this.domNodes.iframe,
+            this.domNodes.container,
+            this._config.containerNode
+          );
+          this._makeVisible();
+          this._removeEscapeHandler();
+        }
+      },
+      true
+    );
+
+    this._on(
       WidgetEventTypes.WIDGET_CLOSE,
       (_event) => {
         if (this._isConfiguredAsHosted()) {
@@ -262,26 +283,12 @@ export class RampInstantSDK {
       true
     );
 
-    const onConfigEvent = () => {
-      if (this._isConfiguredAsHosted()) {
-        return;
-      }
-
-      this.domNodes?.iframe.classList.add('visible');
-
-      const loader = this.domNodes?.shadow.querySelector('.loader-container');
-
-      if (loader) {
-        loader.remove();
-      }
-    };
-
     if (this._config.useSendCryptoCallbackVersion) {
       this.on(InternalEventTypes.SEND_CRYPTO, this._onSendCrypto);
     }
 
-    this._on(WidgetEventTypes.WIDGET_CONFIG_DONE, onConfigEvent, true);
-    this._on(WidgetEventTypes.WIDGET_CONFIG_FAILED, onConfigEvent, true);
+    this._on(WidgetEventTypes.WIDGET_CONFIG_DONE, () => this._onConfigEvent(), true);
+    this._on(WidgetEventTypes.WIDGET_CONFIG_FAILED, () => this._onConfigEvent(), true);
 
     this._on(
       InternalEventTypes.WIDGET_CLOSE_REQUEST,
@@ -404,8 +411,12 @@ export class RampInstantSDK {
   // Event subscriptions aren't cleared so that host can receive a PAYMENT_SUCCESSFUL event
   // even after the widget has been closed
   private _teardownEventSubscriptions(): void {
-    window.removeEventListener('keydown', this._handleEscapeClick, true);
+    this._removeEscapeHandler();
     window.removeEventListener('message', this._subscribeToWidgetEvents);
+  }
+
+  private _removeEscapeHandler(): void {
+    window.removeEventListener('keydown', this._handleEscapeClick, true);
   }
 
   private _showUsingEmbeddedMode(): void {
@@ -467,18 +478,43 @@ export class RampInstantSDK {
     useSendCryptoCallback?: boolean
   ): Pick<
     IHostConfigWithSdkParams,
-    'sdkType' | 'sdkVersion' | 'variant' | 'widgetInstanceId' | 'useSendCryptoCallbackVersion'
+    | 'sdkType'
+    | 'sdkVersion'
+    | 'variant'
+    | 'widgetInstanceId'
+    | 'useSendCryptoCallbackVersion'
+    | 'closeable'
   > {
     const widgetVariant = determineWidgetVariant(config);
+    const closeable = config.closeable ?? ['desktop', 'mobile'].includes(widgetVariant);
 
     return {
       sdkType: 'WEB',
       sdkVersion: SDK_VERSION,
       variant: widgetVariant,
       widgetInstanceId: getRandomIntString(),
+      closeable,
       ...(useSendCryptoCallback
         ? { useSendCryptoCallbackVersion: SEND_CRYPTO_SUPPORTED_VERSION }
         : {}),
     };
+  }
+
+  private _makeVisible() {
+    if (this._isConfiguredAsHosted()) {
+      return;
+    }
+
+    this.domNodes?.iframe.classList.add('visible');
+
+    const loader = this.domNodes?.shadow.querySelector('.loader-container');
+
+    if (loader) {
+      loader.remove();
+    }
+  }
+
+  private _onConfigEvent() {
+    this._makeVisible();
   }
 }
