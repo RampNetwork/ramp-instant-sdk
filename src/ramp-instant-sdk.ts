@@ -1,5 +1,5 @@
-import { clearAllBodyScrollLocks, disableBodyScroll } from 'body-scroll-lock';
-import { getBaseUrl, hideWebsiteBelow, makeIframeResponsive } from './init-helpers';
+import { clearAllBodyScrollLocks, disableBodyScroll } from './body-scroll-lock';
+import { getBaseUrl, makeIframeResponsive } from './init-helpers';
 import { SDK_VERSION, SEND_CRYPTO_SUPPORTED_VERSION } from './consts';
 
 import {
@@ -446,13 +446,7 @@ export class RampInstantSDK {
 
     this._isVisible = true;
 
-    disableBodyScroll(this.domNodes.iframe);
-
-    const widgetMode = determineWidgetVariant(this._config);
-
-    if (widgetMode !== 'desktop' && widgetMode !== 'embedded-desktop') {
-      hideWebsiteBelow(this.domNodes.shadow);
-    }
+    disableBodyScroll();
   }
 
   private _showUsingHostedMode(): void {

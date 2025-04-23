@@ -33,20 +33,6 @@ export function initWidgetIframeUrl(config: IHostConfigWithSdkParams): string {
   return baseUrl.toString();
 }
 
-export function hideWebsiteBelow(
-  parent: Element | ShadowRoot,
-  containerWidth?: number | undefined
-): void {
-  const backgroundWebsiteHider = document.createElement('div');
-  backgroundWebsiteHider.classList.add('background-hider');
-
-  if (containerWidth) {
-    backgroundWebsiteHider.style.maxWidth = `${containerWidth}px`;
-  }
-
-  parent.appendChild(backgroundWebsiteHider);
-}
-
 export function initDOMNodeWithOverlay(
   url: string,
   dispatch: (event: TAllEvents) => void,
@@ -359,23 +345,11 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
   const isEmbedded = variant === 'embedded-mobile' || variant === 'embedded-desktop';
 
   styles.textContent = `
-
-    .background-hider {
-      content: '';
-      height: 30vh;
-      width: 100vw;
-      position: fixed;
-      bottom: 0;
-      transform: translateY(50%);
-      background-color: #f5f8fb;
-      z-index: 999;
-    }
-
     .overlay {
       position: fixed;
       z-index: 1000;
       width: 100vw;
-      height: ${isMobile ? '100%;' : '100vh;'}
+      height: ${isMobile ? '100%;' : '100vh;'}ž
       top: 0;
       left: 0;
       overflow: hidden;
@@ -558,6 +532,29 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
       box-shadow: 0px 8px 34px rgba(221, 62, 86, 0.4);
       color: #fff;
       border-color: transparent;
+    }
+
+    @supports (width: 100dvw) {
+      .overlay {
+        width: 100dvw;
+      }
+
+      .iframe.visible {
+        ${
+          !isEmbedded && isMobile
+            ? `
+          width: 100dvw;
+          height: 100%;
+        `
+            : ''
+        }
+      }
+    }
+
+    @supports (height: 100dvh) {
+      .overlay {
+        height: ${isMobile ? '100%;' : '100dvh;'}
+      }
     }
   `;
 
