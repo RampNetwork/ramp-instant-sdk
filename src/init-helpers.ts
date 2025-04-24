@@ -33,20 +33,6 @@ export function initWidgetIframeUrl(config: IHostConfigWithSdkParams): string {
   return baseUrl.toString();
 }
 
-export function hideWebsiteBelow(
-  parent: Element | ShadowRoot,
-  containerWidth?: number | undefined
-): void {
-  const backgroundWebsiteHider = document.createElement('div');
-  backgroundWebsiteHider.classList.add('background-hider');
-
-  if (containerWidth) {
-    backgroundWebsiteHider.style.maxWidth = `${containerWidth}px`;
-  }
-
-  parent.appendChild(backgroundWebsiteHider);
-}
-
 export function initDOMNodeWithOverlay(
   url: string,
   dispatch: (event: TAllEvents) => void,
@@ -94,6 +80,7 @@ export function initDOMNodeWithoutOverlay(
   overlay: null;
   shadow: ShadowRoot;
   shadowHost: HTMLDivElement;
+  container: HTMLDivElement;
 } {
   const body = document.querySelector('body');
 
@@ -106,6 +93,7 @@ export function initDOMNodeWithoutOverlay(
 
   const container = document.createElement('div');
   container.classList.add('embedded-container');
+  container.classList.add('constrained');
 
   shadow.appendChild(container);
 
@@ -135,6 +123,7 @@ export function initDOMNodeWithoutOverlay(
     overlay: null,
     shadow,
     shadowHost,
+    container,
   };
 }
 
@@ -198,6 +187,56 @@ function prepareIframeNode(
   iframe.setAttribute('allow', 'payment; microphone; camera; clipboard-read; clipboard-write');
 
   iframe.classList.add('iframe');
+
+  return iframe;
+}
+
+export function makeIframeResponsive(
+  iframe: HTMLIFrameElement,
+  container?: HTMLDivElement,
+  containerNode?: HTMLElement
+) {
+  if (container?.classList.contains('constrained')) {
+    container.classList.remove('constrained');
+  }
+
+  const updateIframeSize = () => {
+    if (containerNode) {
+      iframe.setAttribute('width', containerNode.getBoundingClientRect().width.toString());
+      iframe.setAttribute('height', containerNode.getBoundingClientRect().height.toString());
+    } else {
+      iframe.setAttribute('width', window.innerWidth.toString());
+      iframe.setAttribute('height', window.innerHeight.toString());
+    }
+  };
+
+  updateIframeSize();
+
+  // Create a ResizeObserver to watch for size changes
+  const resizeObserver = new ResizeObserver(() => {
+    updateIframeSize();
+  });
+
+  // Observe either the containerNode or document body for size changes
+  if (containerNode) {
+    resizeObserver.observe(containerNode);
+  } else {
+    resizeObserver.observe(document.body);
+  }
+
+  // Clean up the observer when the iframe is removed
+  const parentNode = iframe.parentNode;
+  if (parentNode) {
+    const mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (Array.from(mutation.removedNodes).includes(iframe)) {
+          resizeObserver.disconnect();
+          mutationObserver.disconnect();
+        }
+      });
+    });
+    mutationObserver.observe(parentNode, { childList: true });
+  }
 
   return iframe;
 }
@@ -306,27 +345,15 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
   const isEmbedded = variant === 'embedded-mobile' || variant === 'embedded-desktop';
 
   styles.textContent = `
-
-    .background-hider {
-      content: '';
-      height: 30vh;
-      width: 100vw;
-      position: fixed;
-      bottom: 0;
-      transform: translateY(50%);
-      background-color: #f5f8fb;
-      z-index: 999;
-    }
-
     .overlay {
       position: fixed;
       z-index: 1000;
       width: 100vw;
-      height: ${isMobile ? '100%;' : '100vh;'}
+      height: ${isMobile ? '100%;' : '100vh;'}ž
       top: 0;
       left: 0;
       overflow: hidden;
-      background-color: rgba(166, 174, 185, 0.7);
+      background-color: rgba(0, 0, 0, 0.5);
       display: flex;
       flex-flow: row nowrap;
       justify-content: center;
@@ -342,6 +369,9 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
       flex-flow: row nowrap;
       justify-content: center;
       ${isMobile ? 'align-items: flex-start;' : 'align-items: center;'}
+    }
+
+    .embedded-container.constrained {
       min-width: ${isMobile ? minWidgetMobileWidth : widgetDesktopWidth}px;
       min-height: ${isMobile ? minWidgetMobileHeight : widgetDesktopHeight}px;
     }
@@ -502,6 +532,29 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
       box-shadow: 0px 8px 34px rgba(221, 62, 86, 0.4);
       color: #fff;
       border-color: transparent;
+    }
+
+    @supports (width: 100dvw) {
+      .overlay {
+        width: 100dvw;
+      }
+
+      .iframe.visible {
+        ${
+          !isEmbedded && isMobile
+            ? `
+          width: 100dvw;
+          height: 100%;
+        `
+            : ''
+        }
+      }
+    }
+
+    @supports (height: 100dvh) {
+      .overlay {
+        height: ${isMobile ? '100%;' : '100dvh;'}
+      }
     }
   `;
 

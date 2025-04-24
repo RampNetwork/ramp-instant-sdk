@@ -1,6 +1,6 @@
 {
   "name": "@ramp-network/ramp-instant-sdk",
-  "version": "4.0.8",
+  "version": "5.0.0",
   "description": "SDK for Ramp Instant",
   "keywords": [],
   "main": "dist/ramp-instant-sdk.umd.js",
@@ -53,7 +53,6 @@
     "singleQuote": true
   },
   "devDependencies": {
-    "@types/body-scroll-lock": "^3.1.0",
     "@types/jest": "^27.0.3",
     "@types/node": "^16.11.12",
     "cross-env": "^7.0.3",
