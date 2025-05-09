@@ -1,4 +1,4 @@
-export const baseWidgetUrl = 'https://app.ramp.network/';
+export const baseWidgetUrl = 'https://app.rampnetwork.com/';
 
 export const SEND_CRYPTO_SUPPORTED_VERSION = 1 as const;
 

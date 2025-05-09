@@ -1,6 +1,6 @@
 {
   "name": "@ramp-network/ramp-instant-sdk",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "SDK for Ramp Instant",
   "keywords": [],
   "main": "dist/ramp-instant-sdk.umd.js",
@@ -9,8 +9,8 @@
   "files": [
     "dist"
   ],
-  "author": "Ramp Network <contact@ramp.network>",
-  "homepage": "https://ramp.network",
+  "author": "Ramp Network <contact@rampnetwork.com>",
+  "homepage": "https://rampnetwork.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/RampNetwork/ramp-instant-sdk/"
