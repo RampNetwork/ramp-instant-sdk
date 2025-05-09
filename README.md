@@ -24,7 +24,7 @@ npm install @ramp-network/ramp-instant-sdk
 
 ## Documentation
 
-Docs for the SDK package can be found here - [https://docs.ramp.network/](https://docs.ramp.network/).
+Docs for the SDK package can be found here - [https://docs.rampnetwork.com/](https://docs.rampnetwork.com/).
 
 ## Contact us
 
