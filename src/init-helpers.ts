@@ -349,7 +349,7 @@ function getStylesForShadowDom(variant: AllWidgetVariants): HTMLStyleElement {
       position: fixed;
       z-index: 1000;
       width: 100vw;
-      height: ${isMobile ? '100%;' : '100vh;'}ž
+      height: ${isMobile ? '100%;' : '100vh;'}
       top: 0;
       left: 0;
       overflow: hidden;
