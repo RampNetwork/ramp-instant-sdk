@@ -3,6 +3,7 @@
 ### Features
 
 - Added new config option `credentialless` to control `iframe`'s `credentialless` attribute.
+- Removed unused `body-scroll-lock` dependency.
 
 ### BREAKING CHANGES
 
