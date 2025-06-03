@@ -82,6 +82,7 @@ export interface IHostConfig {
   paymentMethodType?: PaymentMethodType;
   hideExitButton?: boolean;
   closeable?: boolean;
+  credentialless?: boolean;
 }
 
 export interface IHostConfigWithSdkParams extends Omit<IHostConfig, 'useSendCryptoCallback'> {

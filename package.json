@@ -1,6 +1,6 @@
 {
   "name": "@ramp-network/ramp-instant-sdk",
-  "version": "5.0.3",
+  "version": "6.0.0",
   "description": "SDK for Ramp Instant",
   "keywords": [],
   "main": "dist/ramp-instant-sdk.umd.js",
@@ -77,8 +77,5 @@
     "tslint-config-standard": "^9.0.0",
     "tslint-react": "^5.0.0",
     "typescript": "4.5.3"
-  },
-  "dependencies": {
-    "body-scroll-lock": "^3.1.5"
   }
 }
