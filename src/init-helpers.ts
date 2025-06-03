@@ -55,7 +55,7 @@ export function initDOMNodeWithOverlay(
 
   shadow.appendChild(getStylesForShadowDom(config.variant));
 
-  const iframe = prepareIframeNode(url, config.variant);
+  const iframe = prepareIframeNode(url, config.variant, undefined, config.credentialless);
   const overlay = prepareOverlayNode(iframe, dispatch);
 
   overlay.appendChild(iframe);
@@ -147,12 +147,16 @@ export function importFonts(): void {
 function prepareIframeNode(
   url: string,
   variant: AllWidgetVariants,
-  containerNode?: HTMLElement
+  containerNode?: HTMLElement,
+  credentialless?: boolean
 ): HTMLIFrameElement {
   const iframe = document.createElement('iframe');
 
   iframe.setAttribute('src', url);
-  iframe.setAttribute('credentialless', 'credentialless');
+
+  if (credentialless) {
+    iframe.setAttribute('credentialless', 'credentialless');
+  }
 
   if (containerNode) {
     iframe.setAttribute(

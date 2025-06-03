@@ -66,6 +66,10 @@ export function normalizeConfigAndLogErrorsOnInvalidFields(
     delete config.useSendCryptoCallback;
   }
 
+  if (config.credentialless === undefined) {
+    configCopy.credentialless = false;
+  }
+
   logErrors(errors);
 
   return configCopy as IHostConfig;
