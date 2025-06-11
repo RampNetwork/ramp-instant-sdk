@@ -1,3 +1,9 @@
+## [6.0.1]
+
+### Bug Fixes
+
+- Don't invoke event listeners for unknown event types.
+
 ## [6.0.0]
 
 ### Features
