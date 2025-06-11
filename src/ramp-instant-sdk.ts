@@ -142,7 +142,7 @@ export class RampInstantSDK {
         this._listeners[key as TAllEventTypes] = filteredHandlers;
       });
     } else {
-      this._listeners[type] = this._listeners[type].filter((l) => l.callback !== callback);
+      this._listeners[type] = this._listeners[type]?.filter((l) => l.callback !== callback);
     }
 
     return this;
@@ -164,7 +164,7 @@ export class RampInstantSDK {
       const allTypes = Object.values(this._listeners);
       allTypes.forEach((eventHandlers) => eventHandlers.push({ callback, internal }));
     } else {
-      this._listeners[type].push({ callback, internal });
+      this._listeners[type]?.push({ callback, internal });
     }
   }
 
@@ -351,7 +351,7 @@ export class RampInstantSDK {
   private _dispatchEvent(event: TAllEvents): void {
     const { type } = event;
 
-    this._listeners[type].forEach((handler) => handler.callback(event));
+    this._listeners[type]?.forEach((handler) => handler.callback(event));
   }
 
   private _handleEscapeClick(event: KeyboardEvent): void {
