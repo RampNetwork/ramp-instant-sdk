@@ -241,14 +241,6 @@ export class RampInstantSDK {
       return;
     }
 
-    if (
-      ![...Object.values(WidgetEventTypes), ...Object.values(InternalEventTypes)].includes(
-        eventData.type
-      )
-    ) {
-      return;
-    }
-
     this._dispatchEvent(eventData);
   }
 
