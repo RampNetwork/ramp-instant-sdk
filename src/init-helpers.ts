@@ -113,7 +113,7 @@ export function initDOMNodeWithoutOverlay(
 
   shadow.appendChild(getStylesForShadowDom(config.variant));
 
-  const iframe = prepareIframeNode(url, config.variant, config.containerNode);
+  const iframe = prepareIframeNode(url, config.variant, config.containerNode, config.credentialless);
 
   container.appendChild(iframe);
 
