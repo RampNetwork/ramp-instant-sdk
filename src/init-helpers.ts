@@ -25,7 +25,7 @@ export function initWidgetIframeUrl(config: IHostConfigWithSdkParams): string {
   const preparedConfig = { ...configWithoutIframeUrl, hostUrl };
 
   Object.entries(preparedConfig).forEach(([key, value]) => {
-    if (value) {
+    if (value != null && value !== '') {
       baseUrl.searchParams.append(key, Array.isArray(value) ? value.join(',') : value.toString());
     }
   });
@@ -113,7 +113,12 @@ export function initDOMNodeWithoutOverlay(
 
   shadow.appendChild(getStylesForShadowDom(config.variant));
 
-  const iframe = prepareIframeNode(url, config.variant, config.containerNode, config.credentialless);
+  const iframe = prepareIframeNode(
+    url,
+    config.variant,
+    config.containerNode,
+    config.credentialless
+  );
 
   container.appendChild(iframe);
 
