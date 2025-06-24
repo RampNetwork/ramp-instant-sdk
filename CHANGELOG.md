@@ -1,3 +1,15 @@
+## [6.0.3]
+
+### Bug Fixes
+
+- Stringify config booleans such as `credentialless`.
+
+## [6.0.2]
+
+### Bug Fixes
+
+- Apply `credentialless` to non-overlay variants.
+
 ## [6.0.1]
 
 ### Bug Fixes
