@@ -7,6 +7,7 @@ type THostLogoUrl = string;
 type THostApiKey = string;
 type THostAppName = string;
 type TURL = string;
+type TPathname = string;
 type TDateString = string;
 type TFiatCurrency = string;
 type TFiatValue = string;
@@ -69,6 +70,7 @@ export interface IHostConfig {
   hostLogoUrl: THostLogoUrl;
   hostAppName: THostAppName;
   url?: TURL;
+  pathname?: TPathname;
   variant?: AllWidgetVariants;
   webhookStatusUrl?: TWebhookStatusUrl;
   finalUrl?: TFinalUrl;

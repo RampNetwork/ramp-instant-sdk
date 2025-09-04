@@ -1,3 +1,9 @@
+## [6.1.0]
+
+### Features
+
+- Added new config option `pathname` to specify a custom pathname for the widget URL.
+
 ## [6.0.3]
 
 ### Bug Fixes
