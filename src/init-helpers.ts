@@ -13,14 +13,22 @@ import {
 } from './utils';
 
 export function getBaseUrl(config: IHostConfigWithSdkParams): URL {
-  return new URL(config.url || baseWidgetUrl);
+  const baseUrl = new URL(config.url || baseWidgetUrl);
+
+  if (config.pathname) {
+    // Ensure the custom pathname starts with a slash
+    const pathname = config.pathname.startsWith('/') ? config.pathname : `/${config.pathname}`;
+    baseUrl.pathname = pathname;
+  }
+
+  return baseUrl;
 }
 
 export function initWidgetIframeUrl(config: IHostConfigWithSdkParams): string {
   const baseUrl = getBaseUrl(config);
   const hostUrl = window.location.origin;
 
-  const { containerNode, url, ...configWithoutIframeUrl } = config;
+  const { containerNode, url, pathname, ...configWithoutIframeUrl } = config;
 
   const preparedConfig = { ...configWithoutIframeUrl, hostUrl };
 
