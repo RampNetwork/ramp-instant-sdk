@@ -1,3 +1,9 @@
+## [6.2.0]
+
+### Features
+
+- Updated constructor payload types to support two authentication flows: signed URL-based (requires `url`, optional `hostApiKey`) or regular (requires `hostApiKey`, optional `url`)
+
 ## [6.1.0]
 
 ### Features
