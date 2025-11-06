@@ -58,7 +58,8 @@ export enum PurchaseStatus {
 
 export type TPurchaseExternalId = string;
 
-export interface IHostConfig {
+// Base interface with all optional fields
+interface IHostConfigBase {
   swapAsset?: TAsset;
   offrampAsset?: TAsset;
   swapAmount?: TSwapAmount;
@@ -66,10 +67,8 @@ export interface IHostConfig {
   fiatCurrency?: TFiatCurrency;
   userAddress?: TEthAddress;
   userEmailAddress?: TEmailAddress;
-  hostApiKey?: THostApiKey;
-  hostLogoUrl: THostLogoUrl;
-  hostAppName: THostAppName;
-  url?: TURL;
+  hostLogoUrl?: THostLogoUrl;
+  hostAppName?: THostAppName;
   pathname?: TPathname;
   variant?: AllWidgetVariants;
   webhookStatusUrl?: TWebhookStatusUrl;
@@ -86,6 +85,20 @@ export interface IHostConfig {
   closeable?: boolean;
   credentialless?: boolean;
 }
+
+// for the signed url flow.
+interface IHostConfigSignedUrlBased extends IHostConfigBase {
+  url: TURL;
+  hostApiKey?: THostApiKey;
+}
+
+// when signed url flow is not used, hostApiKey is required, url is optional
+interface IHostConfigTraditional extends IHostConfigBase {
+  url?: TURL;
+  hostApiKey: THostApiKey;
+}
+
+export type IHostConfig = IHostConfigSignedUrlBased | IHostConfigTraditional;
 
 export interface IHostConfigWithSdkParams extends Omit<IHostConfig, 'useSendCryptoCallback'> {
   sdkType: 'WEB';
