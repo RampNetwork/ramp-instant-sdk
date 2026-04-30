@@ -84,6 +84,21 @@ interface IHostConfigBase {
   hideExitButton?: boolean;
   closeable?: boolean;
   credentialless?: boolean;
+  /**
+   * When `true`, the SDK reads the host page's Amplitude device ID and session
+   * ID from `window.amplitude` and forwards them to the widget iframe so that
+   * widget events are attributed to the same Amplitude user as host-page
+   * events. Useful when both the host page and the widget use the same
+   * Amplitude project (e.g. `rampnetwork.com` ↔ `app.rampnetwork.com`).
+   *
+   * Falls back silently if `window.amplitude` is missing or doesn't expose
+   * `getDeviceId()`/`getSessionId()`.
+   *
+   * The values are forwarded as `client` and `profile` URL params, both of
+   * which are excluded from the signature payload so this is safe to enable
+   * on partner-signed widget URLs.
+   */
+  useParentAmplitudeIdentity?: boolean;
 }
 
 // for the signed url flow.
