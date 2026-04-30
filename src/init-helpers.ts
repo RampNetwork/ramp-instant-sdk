@@ -28,7 +28,8 @@ export function initWidgetIframeUrl(config: IHostConfigWithSdkParams): string {
   const baseUrl = getBaseUrl(config);
   const hostUrl = window.location.origin;
 
-  const { containerNode, url, pathname, ...configWithoutIframeUrl } = config;
+  const { containerNode, url, pathname, useParentAmplitudeIdentity, ...configWithoutIframeUrl } =
+    config;
 
   const preparedConfig = { ...configWithoutIframeUrl, hostUrl };
 
@@ -38,7 +39,56 @@ export function initWidgetIframeUrl(config: IHostConfigWithSdkParams): string {
     }
   });
 
+  if (useParentAmplitudeIdentity) {
+    const { deviceId, sessionId } = readParentAmplitudeIdentity();
+    if (deviceId && !baseUrl.searchParams.has('client')) {
+      baseUrl.searchParams.append('client', deviceId);
+    }
+    if (sessionId != null && !baseUrl.searchParams.has('profile')) {
+      baseUrl.searchParams.append('profile', sessionId.toString());
+    }
+  }
+
   return baseUrl.toString();
+}
+
+/**
+ * Reads the Amplitude device ID / session ID from the host page's global
+ * Amplitude SDK instance (the one exposed at `window.amplitude` by the
+ * official browser snippet).
+ *
+ * Returns an empty object if Amplitude isn't loaded, is loaded but not yet
+ * initialised, or throws while reading. Never propagates an exception — failing
+ * to share identity should never break widget initialisation.
+ */
+interface IAmplitudeBrowserGlobal {
+  getDeviceId?(): string | undefined;
+  getSessionId?(): number | undefined;
+}
+
+export function readParentAmplitudeIdentity(): {
+  deviceId?: string;
+  sessionId?: number;
+} {
+  try {
+    const amplitude = (window as unknown as { amplitude?: IAmplitudeBrowserGlobal }).amplitude;
+
+    if (!amplitude) return {};
+
+    const deviceId =
+      typeof amplitude.getDeviceId === 'function' ? amplitude.getDeviceId() : undefined;
+    const sessionId =
+      typeof amplitude.getSessionId === 'function' ? amplitude.getSessionId() : undefined;
+
+    const validDeviceId =
+      typeof deviceId === 'string' && deviceId.length > 0 ? deviceId : undefined;
+    const validSessionId =
+      typeof sessionId === 'number' && Number.isFinite(sessionId) ? sessionId : undefined;
+
+    return { deviceId: validDeviceId, sessionId: validSessionId };
+  } catch {
+    return {};
+  }
 }
 
 export function initDOMNodeWithOverlay(
